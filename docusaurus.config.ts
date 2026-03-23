@@ -11,8 +11,8 @@ const config: Config = {
     v4: true,
   },
 
-  url: 'https://riffing-ai.github.io',
-  baseUrl: '/publisher-docs/',
+  url: 'https://docs.autobind.ai',
+  baseUrl: '/',
 
   organizationName: 'riffing-ai',
   projectName: 'publisher-docs',
