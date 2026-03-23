@@ -29,19 +29,3 @@
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 
-/* Sticky table header for the field reference matrix */
-table thead tr {
-  position: sticky;
-  top: 60px; /* below the navbar */
-  z-index: 1;
-}
-
-table thead tr:first-child th {
-  background: var(--ifm-background-color);
-  border-bottom: 2px solid var(--ifm-color-emphasis-300);
-}
-
-table thead tr:nth-child(2) th {
-  background: var(--ifm-background-color);
-  border-bottom: 2px solid var(--ifm-color-emphasis-300);
-}
