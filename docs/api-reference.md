@@ -18,6 +18,85 @@ JSON API for submitting auto insurance leads and call transfers via ping-post. Y
 
 ---
 
+## Quick Start
+
+### Lead — ping then post
+
+```bash
+# 1. Ping with consumer data (no PII)
+curl -X POST https://api.autobind.ai/leads/ping \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "media_type": "lead",
+    "ip_address": "73.162.100.50",
+    "user_agent": "Mozilla/5.0 Chrome/120.0.0.0",
+    "media_source": "Google",
+    "landing_page": "https://example.com/quote",
+    "lead_created_at": "2026-03-23T14:30:00Z",
+    "state_abbreviation": "TX",
+    "zip": "75201",
+    "currently_insured": true,
+    "home_ownership": false,
+    "drivers": [{ "gender": "male", "birth_date": "1990-06-15", "marital_status": "married", "license_status": "active", "sr_twenty_two": false, "dui": false }],
+    "vehicles": [{ "year": 2021, "make": "Toyota", "model": "Camry", "primary_purpose": false }]
+  }'
+# → { "status": "bid", "bid_id": "...", "price": "0.29" }
+
+# 2. Post full data with PII (use the bid_id from step 1)
+curl -X POST https://api.autobind.ai/leads/post \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "media_type": "lead",
+    "bid_id": "BID_ID_FROM_PING",
+    "ip_address": "73.162.100.50",
+    "user_agent": "Mozilla/5.0 Chrome/120.0.0.0",
+    "media_source": "Google",
+    "landing_page": "https://example.com/quote",
+    "lead_created_at": "2026-03-23T14:30:00Z",
+    "trusted_form_url": "https://cert.trustedform.com/abc123",
+    "first_name": "John", "last_name": "Doe",
+    "contact_phone": "2145559012", "email": "john@example.com",
+    "street_address": "123 Main St", "city": "Dallas",
+    "state_abbreviation": "TX", "zip": "75201",
+    "currently_insured": true, "home_ownership": false,
+    "drivers": [{ "first_name": "John", "last_name": "Doe", "gender": "male", "birth_date": "1990-06-15", "marital_status": "married", "relationship_to_policyholder": "self", "license_status": "active", "sr_twenty_two": false }],
+    "vehicles": [{ "year": 2021, "make": "Toyota", "model": "Camry", "primary_purpose": false }]
+  }'
+# → { "status": "accepted", "bid_id": "..." }
+```
+
+### Call — ping then post
+
+```bash
+# 1. Ping with minimal data
+curl -X POST https://api.autobind.ai/leads/ping \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "media_type": "call",
+    "state_abbreviation": "TX",
+    "currently_insured": true,
+    "language": "en"
+  }'
+# → { "status": "bid", "bid_id": "...", "price": "4.00", "transfer_phone": "8773119191", "minimum_call_duration": 90 }
+
+# 2. Post with consumer's phone number (use the bid_id from step 1)
+curl -X POST https://api.autobind.ai/leads/post \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "media_type": "call",
+    "bid_id": "BID_ID_FROM_PING",
+    "dial_in_phone": "2145559688"
+  }'
+# → { "status": "accepted", "bid_id": "...", "transfer_phone": "8773119191", "minimum_call_duration": 90 }
+# Transfer the consumer to transfer_phone. Call must last minimum_call_duration seconds.
+```
+
+---
+
 ## How It Works
 
 ### Lead Flow
@@ -304,7 +383,7 @@ Transfer the consumer to `transfer_phone`. The call must last at least `minimum_
 | `bid_id` | string (UUID) | From ping response |
 | `dial_in_phone` | string (10 digits) | Consumer's caller ID |
 
-**Optional — if the call originated from a form, you may include full lead data. We'll store it but will not reject the call based on it.**
+**Optional — including lead data improves conversion rates and the price we're willing to pay on future bids. We will not reject the call based on this data.**
 
 `ip_address`, `user_agent`, `lead_created_at`, `language`, `trusted_form_url`, `tcpa_language`, `tcpa_json`, `leadid_token`, `first_name`, `middle_name`, `last_name`, `contact_phone`, `mobile_phone`, `daytime_phone`, `evening_phone`, `email`, `street_address`, `city`, `state_abbreviation`, `zip`, `credit_status`, `residence_type`, `home_ownership`, `years_at_address`, `months_at_address`, `currently_insured`, `insured_last_thirty_days`, `insured_last_five_years`, `current_company`, `current_policy_expires`, `current_bi_per_person`, `current_bi_per_accident`, `current_company_tenure_months`, `insured_duration`, `lapse_reason`, `coverage_type`, `policy_start_date`, `vehicles_in_household`, `drivers[]`, `vehicles[]`
 
@@ -413,7 +492,32 @@ curl -X POST https://api.autobind.ai/leads/post \
 
 **Optional fields (see TypeScript types section for complete list):**
 
-`middle_name`, `mobile_phone` (include only if the consumer also consented to be contacted on their mobile number), `daytime_phone`, `evening_phone`, `tcpa_language`, `tcpa_json`, `leadid_token`, `credit_status`, `residence_type`, `years_at_address`, `months_at_address`, `insured_last_thirty_days`, `insured_last_five_years`, `current_company`, `current_policy_expires`, `current_bi_per_person`, `current_bi_per_accident`, `current_company_tenure_months`, `insured_duration`, `lapse_reason`, `coverage_type`, `policy_start_date`, `vehicles_in_household`, `language`
+| Field | Type | Description |
+|-------|------|-------------|
+| `middle_name` | string | |
+| `mobile_phone` | string (10 digits) | Include only if consumer consented to be contacted on their mobile |
+| `daytime_phone` | string (10 digits) | |
+| `evening_phone` | string (10 digits) | |
+| `language` | `"en"` (English), `"es"` (Spanish) | |
+| `credit_status` | enum | `"excellent"`, `"above_average"`, `"average"`, `"below_average"`, `"poor"` |
+| `residence_type` | enum | `"single_family_home"`, `"townhouse"`, `"condo"`, `"apartment"`, `"mobile_home"`, `"other"` |
+| `coverage_type` | enum | `"state_minimum"`, `"basic"`, `"superior"`, `"premium"` |
+| `lapse_reason` | enum | `"military"`, `"no_vehicle"`, `"no_license"`, `"no_need"`, `"other"` |
+| `current_company` | enum | `"Allstate"`, `"Geico"`, `"Progressive"`, `"StateFarm"`, `"USAA"`, `"other"`, and more — see TypeScript types for full list |
+| `years_at_address` | number | |
+| `months_at_address` | number | |
+| `insured_last_thirty_days` | boolean | |
+| `insured_last_five_years` | boolean | |
+| `current_policy_expires` | string | `YYYY-MM-DD` |
+| `current_bi_per_person` | number | Current BI limit per person |
+| `current_bi_per_accident` | number | Current BI limit per accident |
+| `current_company_tenure_months` | number | |
+| `insured_duration` | number | Months continuously insured |
+| `policy_start_date` | string | `YYYY-MM-DD` — desired start date |
+| `vehicles_in_household` | number | |
+| `tcpa_language` | string | TCPA consent language shown to consumer |
+| `tcpa_json` | string | Structured TCPA consent data |
+| `leadid_token` | string | Jornaya LeadiD token |
 
 ### Incident Examples
 
@@ -448,7 +552,7 @@ Each incident has a `type` that determines which additional fields apply. All ad
 }
 ```
 - `violation_type`: `"driving_under_the_influence"`, `"speeding"`, `"driving_while_using_a_cell_phone"`, `"other"`
-- If `"other"`, include `violation_type_other` with a description
+- → If `"other"`: include `violation_type_other` with a description of the violation
 
 **Claim:**
 ```json
@@ -459,9 +563,9 @@ Each incident has a `type` that determines which additional fields apply. All ad
 }
 ```
 - `claim_type`: `"theft"`, `"vandalism"`, `"glass_repair"`, `"other"`
-- `claim_amount`: dollar amount of the claim
+- `claim_amount`: dollar amount of the claim (we use this to assess risk)
 
-> **Note:** All fields besides `type` are optional — include what you have. `incident_date` (`YYYY-MM-DD`) is helpful but not required.
+> **Note:** Only `type` is required. All other fields are optional — include what you have. `incident_date` (`YYYY-MM-DD`) is helpful but not required. Omit the `incidents` field entirely if the driver has no incidents.
 
 ---
 
@@ -987,6 +1091,18 @@ type EmploymentStatus = "company" | "self" | "military" | "government" | "retire
 type Industry = "financial" | "agriculture" | "arts" | "assistants" | "automotive" | "cleaning" | "computers" | "construction" | "counseling" | "education" | "engineering" | "executives" | "health" | "law" | "operators" | "postal" | "maintenance" | "service" | "food" | "sales" | "science" | "travel";
 type StudentType = "high_school_student" | "technical_vocational_student" | "freshman_undergraduate" | "sophomore_undergraduate" | "junior_undergraduate" | "senior_undergraduate" | "graduate_student" | "law_student" | "medical_student";
 type MilitaryAffiliation = "active_duty" | "military_retiree" | "veteran" | "military_academy_cadet" | "national_guard" | "military_reserves";
-type BusinessUseType = "clergy" | "courier_service" | "daycare" | "delivery_fast_food" | "delivery_retail_wholesale" | "delivery_route" | "delivery_us_mail" | "delivery_and_sales" | "doctor_professional" | "farm_use" | "lawyer_professional" | "real_estate" | "repair_installation" | "ridesharing" | "sales_multistate" | "sales_route" | "sales_calls" | "social_worker" | "transport_people" | "travel_to_jobsites" | "travel_to_meetings" | "visit_clients" | "visit_outside_offices";
+type BusinessUseType =
+  // Delivery
+  | "courier_service" | "delivery_fast_food" | "delivery_retail_wholesale"
+  | "delivery_route" | "delivery_us_mail" | "delivery_and_sales"
+  // Sales & client visits
+  | "sales_multistate" | "sales_route" | "sales_calls"
+  | "visit_clients" | "visit_outside_offices"
+  // Professional
+  | "doctor_professional" | "lawyer_professional" | "clergy" | "social_worker"
+  // Travel & transport
+  | "travel_to_jobsites" | "travel_to_meetings" | "transport_people" | "ridesharing"
+  // Other
+  | "daycare" | "farm_use" | "real_estate" | "repair_installation";
 type CurrentCompany = "21stCentury" | "AAA" | "Allstate" | "AmFam" | "AmericanFamily" | "Amica" | "AssuranceAmerica" | "BristolWest" | "Dairyland" | "DirectAuto" | "Elephant" | "Erie" | "Esurance" | "Farmers" | "Gainsco" | "Geico" | "Hartford" | "Infinity" | "Kemper" | "LibertyMutual" | "Mercury" | "MetLife" | "NationalGeneral" | "Nationwide" | "Progressive" | "Root" | "SafeAuto" | "Safeco" | "StateFarm" | "TheGeneral" | "Travelers" | "USAA" | "other";
 ```
