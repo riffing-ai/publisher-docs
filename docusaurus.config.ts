@@ -17,6 +17,7 @@ const config: Config = {
   organizationName: 'riffing-ai',
   projectName: 'publisher-docs',
 
+  trailingSlash: false,
   onBrokenLinks: 'warn',
 
   // Block all crawlers
