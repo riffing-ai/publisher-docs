@@ -41,7 +41,7 @@ curl -X POST https://api.autobind.ai/leads/ping \
     "drivers": [{ "gender": "male", "birth_date": "1990-06-15", "marital_status": "married", "license_status": "active", "sr_twenty_two": false, "dui": false }],
     "vehicles": [{ "year": 2021, "make": "Toyota", "model": "Camry", "primary_purpose": false }]
   }'
-# → { "status": "bid", "bid_id": "...", "price": "0.29" }
+# → { "status": "bid", "bid_id": "...", "price": "4.20" }
 
 # 2. Post full data with PII (use the bid_id from step 1)
 curl -X POST https://api.autobind.ai/leads/post \
@@ -80,7 +80,7 @@ curl -X POST https://api.autobind.ai/leads/ping \
     "currently_insured": true,
     "language": "en"
   }'
-# → { "status": "bid", "bid_id": "...", "price": "4.00", "transfer_phone": "8773119191", "minimum_call_duration": 90 }
+# → { "status": "bid", "bid_id": "...", "price": "12.40", "transfer_phone": "8773119191", "minimum_call_duration": 90 }
 
 # 2. Post with consumer's phone number (use the bid_id from step 1)
 curl -X POST https://api.autobind.ai/leads/post \
@@ -170,7 +170,7 @@ curl -X POST https://api.autobind.ai/leads/ping \
   "status": "bid",
   "bid_id": "550e8400-e29b-41d4-a716-446655440000",
   "external_id": "your-unique-id-123",
-  "price": "4.80",
+  "price": "12.40",
   "transfer_phone": "4103989038",
   "minimum_call_duration": 90
 }
@@ -225,7 +225,7 @@ curl -X POST https://api.autobind.ai/leads/ping \
   "status": "bid",
   "bid_id": "660f9500-a12c-41d4-b827-557766550000",
   "external_id": "your-unique-id-456",
-  "price": "0.29"
+  "price": "4.20"
 }
 ```
 
@@ -248,93 +248,6 @@ Lead bids do NOT include `transfer_phone` or `minimum_call_duration`.
 |--------|---------|
 | `no_bid` | Data validated successfully but no bid is available. This covers all cases where we choose not to buy (state not supported, budget exhausted, doesn't meet criteria, outside operating hours, zip issues, etc.) |
 
-### Ping Field Reference
-
-**Required for all pings (call and lead):**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `media_type` | `"call"` or `"lead"` | Determines validation rules and response shape |
-| `state_abbreviation` | string (2 uppercase letters) | US state code, e.g., `"TX"` |
-| `currently_insured` | boolean | Whether consumer has active auto insurance |
-
-**Required for call pings only:**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `language` | `"en"` (English) or `"es"` (Spanish) | Consumer's preferred language. Default to `"en"` if not collected. |
-
-**Required for lead pings only:**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `ip_address` | string | Consumer's IP address |
-| `user_agent` | string (max 500) | Consumer's browser user agent |
-| `media_source` | string | Traffic source — `"Google"`, `"Facebook"`, etc. |
-| `landing_page` | string (max 500) | URL consumer came from |
-| `zip` | string (5 digits) | Zip code, e.g., `"75201"` |
-| `home_ownership` | boolean | `true` = homeowner |
-| `lead_created_at` | timestamp | When consumer submitted the form. Format: `YYYY-MM-DDTHH:mm:ssZ`, e.g. `"2026-03-23T19:36:43Z"` |
-| `drivers` | array (1–6) | At least one driver object (see below) |
-| `vehicles` | array (1–6) | At least one vehicle object (see below) |
-
-**Optional for all pings (improves bid accuracy):**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `external_id` | string (max 100) | Your unique ID for this consumer/session. Echoed back in all responses for correlation. |
-| `sub_id` | string (max 30) | Sub-affiliate tracking ID |
-| `traffic_channel` | `"cpc"`, `"organic"`, `"display"`, `"social"`, `"email"` | Channel type |
-| `campaign_name` | string (max 100) | Your marketing campaign identifier |
-| `placement_type` | `"thank_you_page"`, `"early_exit"`, `"form_page"` | Where consumer converted |
-| `search_keyword` | string | Search term that triggered the ad |
-| `credit_status` | `"excellent"`, `"above_average"`, `"average"`, `"below_average"`, `"poor"` | Self-reported credit |
-| `residence_type` | `"single_family_home"`, `"townhouse"`, `"condo"`, `"apartment"`, `"mobile_home"`, `"other"` | Dwelling type |
-
-**Optional for call pings only (required for lead pings — listed above):**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `ip_address` | string | Consumer's IP address |
-| `user_agent` | string (max 500) | Consumer's browser user agent |
-| `media_source` | string | Traffic source |
-| `landing_page` | string (max 500) | URL consumer came from |
-| `home_ownership` | boolean | `true` = homeowner |
-| `zip` | string (5 digits) | Zip code |
-| `language` | `"en"` (English) or `"es"` (Spanish) | Consumer's preferred language |
-| `drivers` | array (1–6) | Driver objects (see below) |
-| `vehicles` | array (1–6) | Vehicle objects (see below) |
-
-**Ping driver object:**
-
-| Field | Required | Type | Description |
-|-------|----------|------|-------------|
-| `gender` | YES | `"male"`, `"female"` | |
-| `birth_date` | YES | string | `YYYY-MM-DD` |
-| `marital_status` | YES | enum | `"single"`, `"married"`, `"divorced"`, `"separated"`, `"widowed"`, `"domestic_partnership"`, `"civil_union"` |
-| `license_status` | YES | enum | `"active"`, `"suspended"`, `"expired"`, `"permit"`, `"no_license"` |
-| `sr_twenty_two` | YES | boolean | SR-22 or SR-1P filing requirement. Default to `false` if not collected. |
-| `dui` | Leads: YES, Calls: NO | boolean | DUI in past 5 years. Default to `false` if not collected. |
-| `incidents` | NO | array (0–6) | Incidents for this driver. Omit if none. See ping incident object below. |
-
-**Ping incident object:**
-
-| Field | Required | Type | Description |
-|-------|----------|------|-------------|
-| `type` | YES | enum | `"accident"`, `"violation"`, `"claim"` |
-| `incident_date` | NO | string | `YYYY-MM-DD` — include if available |
-
-**Ping vehicle object:**
-
-| Field | Required | Type | Description |
-|-------|----------|------|-------------|
-| `year` | YES | number | Model year (min 1900) |
-| `make` | YES | string | e.g., `"Toyota"` |
-| `model` | YES | string | e.g., `"Camry"` |
-| `primary_purpose` | Leads: YES, Calls: NO | boolean | `false` = personal/commute, `true` = primarily used for commercial purposes (triggers `type_of_business_use` on post). Default to `false` if not collected. |
-
----
-
 ## POST /leads/post
 
 Submit full data after winning the auction. Include the `bid_id` from the ping response.
@@ -345,115 +258,25 @@ Submit full data after winning the auction. Include the `bid_id` from the ping r
 
 Posting after expiry returns `{"status": "rejected", "reason": "bid_expired"}`.
 
-### Call Post — Request
+### Post — Accepted Responses
 
-```bash
-curl -X POST https://api.autobind.ai/leads/post \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "media_type": "call",
-    "bid_id": "550e8400-e29b-41d4-a716-446655440000",
-    "dial_in_phone": "2145559688",
-    "language": "en"
-  }'
+**Lead:**
+```json
+{ "status": "accepted", "bid_id": "660f9500-...", "external_id": "your-id" }
 ```
 
-### Call Post — Accepted Response
-
+**Call:**
 ```json
-{
-  "status": "accepted",
-  "bid_id": "550e8400-e29b-41d4-a716-446655440000",
-  "external_id": "your-unique-id-123",
-  "transfer_phone": "4103989038",
-  "minimum_call_duration": 90
-}
+{ "status": "accepted", "bid_id": "550e8400-...", "external_id": "your-id", "transfer_phone": "8773119191", "minimum_call_duration": 90 }
 ```
 
 Transfer the consumer to `transfer_phone`. The call must last at least `minimum_call_duration` seconds to qualify for payment.
 
-### Call Post Field Reference
-
-**Required:**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `media_type` | `"call"` | |
-| `bid_id` | string (UUID) | From ping response |
-| `dial_in_phone` | string (10 digits) | Consumer's caller ID |
-
-**Optional — including lead data improves conversion rates and the price we're willing to pay on future bids. We will not reject the call based on this data.**
-
-`ip_address`, `user_agent`, `lead_created_at`, `language`, `trusted_form_url`, `tcpa_language`, `tcpa_json`, `leadid_token`, `first_name`, `middle_name`, `last_name`, `contact_phone`, `mobile_phone`, `daytime_phone`, `evening_phone`, `email`, `street_address`, `city`, `state_abbreviation`, `zip`, `credit_status`, `residence_type`, `home_ownership`, `years_at_address`, `months_at_address`, `currently_insured`, `insured_last_thirty_days`, `insured_last_five_years`, `current_company`, `current_policy_expires`, `current_bi_per_person`, `current_bi_per_accident`, `current_company_tenure_months`, `insured_duration`, `lapse_reason`, `coverage_type`, `policy_start_date`, `vehicles_in_household`, `drivers[]`, `vehicles[]`
-
-See the Lead Post Field Reference and TypeScript types for field details.
-
-### Lead Post — Request
-
-**`trusted_form_url` is required for all lead posts.** Leads without a TrustedForm certificate (by ActiveProspect) will be rejected with `"missing_consent_proof"`.
-
-```bash
-curl -X POST https://api.autobind.ai/leads/post \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "media_type": "lead",
-    "bid_id": "660f9500-a12c-41d4-b827-557766550000",
-    "ip_address": "73.162.100.50",
-    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0",
-    "media_source": "Google",
-    "landing_page": "https://example.com/auto-insurance",
-    "lead_created_at": "2026-03-22T14:30:00Z",
-    "trusted_form_url": "https://cert.trustedform.com/abc123",
-    "first_name": "John",
-    "last_name": "Doe",
-    "contact_phone": "2145559012",
-    "email": "john@example.com",
-    "street_address": "123 Main St",
-    "city": "Dallas",
-    "state_abbreviation": "TX",
-    "zip": "75201",
-    "currently_insured": true,
-    "home_ownership": false,
-    "drivers": [
-      {
-        "first_name": "John",
-        "last_name": "Doe",
-        "gender": "male",
-        "birth_date": "1990-06-15",
-        "marital_status": "married",
-        "relationship_to_policyholder": "self",
-        "license_status": "active",
-        "sr_twenty_two": false
-      }
-    ],
-    "vehicles": [
-      { "year": 2021, "make": "Toyota", "model": "Camry", "primary_purpose": false }
-    ]
-  }'
-```
-
-### Lead Post — Accepted Response
+### Rejected Response
 
 ```json
-{
-  "status": "accepted",
-  "bid_id": "660f9500-a12c-41d4-b827-557766550000",
-  "external_id": "your-unique-id-456"
-}
+{ "status": "rejected", "reason": "duplicate_phone" }
 ```
-
-### Rejected Response (both types)
-
-```json
-{
-  "status": "rejected",
-  "reason": "duplicate_phone"
-}
-```
-
-**Post rejection reasons (both leads and calls):**
 
 | Reason | Meaning |
 |--------|---------|
@@ -461,63 +284,129 @@ curl -X POST https://api.autobind.ai/leads/post \
 | `bid_expired` | Bid has expired (leads: 90s, calls: 60s) |
 | `duplicate_phone` | Phone number seen in last 30 days |
 | `missing_consent_proof` | `trusted_form_url` is missing (leads only) |
-| `failed_secondary_evaluation` | Lead data failed our secondary evaluation checks (leads only) |
+| `failed_secondary_evaluation` | Lead data failed our evaluation (leads only) |
 
-### Lead Post Field Reference
+### `trusted_form_url`
 
-**Required fields:**
+Required for all lead posts. This is a [TrustedForm](https://activeprospect.com/trustedform/) certificate URL from ActiveProspect that proves the consumer consented on your form. Leads without it are rejected with `"missing_consent_proof"`.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `media_type` | `"lead"` | |
-| `bid_id` | string (UUID) | From ping response |
-| `ip_address` | string | Consumer's IP address |
-| `user_agent` | string (max 500) | Consumer's browser user agent |
-| `media_source` | string | Traffic source — `"Google"`, `"Facebook"`, etc. |
-| `landing_page` | string (max 500) | URL consumer came from |
-| `lead_created_at` | timestamp | Format: `YYYY-MM-DDTHH:mm:ssZ`, e.g. `"2026-03-23T19:36:43Z"` |
-| `trusted_form_url` | string | TrustedForm certificate URL (by ActiveProspect). **Required.** |
-| `first_name` | string (max 100) | Policyholder's first name |
-| `last_name` | string (max 100) | Policyholder's last name |
-| `contact_phone` | string (10 digits) | Phone number the consumer provided consent to be contacted on. |
-| `email` | string (max 100) | Valid email address |
-| `street_address` | string (max 200) | Street address including unit/apt |
-| `city` | string (max 100) | City name |
-| `state_abbreviation` | string (2 uppercase letters) | US state code |
-| `zip` | string (5 digits) | Zip code |
-| `currently_insured` | boolean | Has active auto insurance |
-| `home_ownership` | boolean | `true` = homeowner |
-| `drivers` | array (1–6) | Full driver objects. `drivers[0].relationship_to_policyholder` must be `"self"` |
-| `vehicles` | array (1–6) | Full vehicle objects. `primary_purpose` is required on each vehicle. |
+---
 
-**Optional fields (see TypeScript types section for complete list):**
+## Field Reference
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `middle_name` | string | |
-| `mobile_phone` | string (10 digits) | Include only if consumer consented to be contacted on their mobile |
-| `daytime_phone` | string (10 digits) | |
-| `evening_phone` | string (10 digits) | |
-| `language` | `"en"` (English), `"es"` (Spanish) | |
-| `credit_status` | enum | `"excellent"`, `"above_average"`, `"average"`, `"below_average"`, `"poor"` |
-| `residence_type` | enum | `"single_family_home"`, `"townhouse"`, `"condo"`, `"apartment"`, `"mobile_home"`, `"other"` |
-| `coverage_type` | enum | `"state_minimum"`, `"basic"`, `"superior"`, `"premium"` |
-| `lapse_reason` | enum | `"military"`, `"no_vehicle"`, `"no_license"`, `"no_need"`, `"other"` |
-| `current_company` | enum | `"Allstate"`, `"Geico"`, `"Progressive"`, `"StateFarm"`, `"USAA"`, `"other"`, and more — see TypeScript types for full list |
-| `years_at_address` | number | |
-| `months_at_address` | number | |
-| `insured_last_thirty_days` | boolean | |
-| `insured_last_five_years` | boolean | |
-| `current_policy_expires` | string | `YYYY-MM-DD` |
-| `current_bi_per_person` | number | Current BI limit per person |
-| `current_bi_per_accident` | number | Current BI limit per accident |
-| `current_company_tenure_months` | number | |
-| `insured_duration` | number | Months continuously insured |
-| `policy_start_date` | string | `YYYY-MM-DD` — desired start date |
-| `vehicles_in_household` | number | |
-| `tcpa_language` | string | TCPA consent language shown to consumer |
-| `tcpa_json` | string | Structured TCPA consent data |
-| `leadid_token` | string | Jornaya LeadiD token |
+All ping and post fields in one table. ✅ = required, ○ = optional, — = not applicable.
+
+> **Call posts:** Only `media_type`, `bid_id`, and `dial_in_phone` are required. All other fields are optional — but including lead data improves conversion rates and the price we're willing to pay on future bids.
+
+<div style={{fontSize: '13px'}}>
+
+<table>
+<thead>
+<tr>
+<th rowSpan="2">Field</th>
+<th rowSpan="2">Type</th>
+<th colSpan="2" style={{textAlign: 'center'}}>Lead</th>
+<th colSpan="2" style={{textAlign: 'center'}}>Call</th>
+<th rowSpan="2">Description</th>
+</tr>
+<tr>
+<th style={{textAlign: 'center'}}>Ping</th>
+<th style={{textAlign: 'center'}}>Post</th>
+<th style={{textAlign: 'center'}}>Ping</th>
+<th style={{textAlign: 'center'}}>Post</th>
+</tr>
+</thead>
+<tbody>
+<tr><td colSpan="7" style={{background: '#1a1a2e', fontWeight: 'bold', padding: '6px 12px'}}>Core</td></tr>
+<tr><td><code>media_type</code></td><td><code>"lead"</code> / <code>"call"</code></td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td></td></tr>
+<tr><td><code>bid_id</code></td><td>UUID</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td>From ping response</td></tr>
+<tr><td><code>external_id</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td>Your ID — echoed in responses</td></tr>
+<tr><td><code>state_abbreviation</code></td><td>string (2)</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td><code>"TX"</code> — 2 uppercase letters</td></tr>
+<tr><td><code>currently_insured</code></td><td>boolean</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
+<tr><td><code>zip</code></td><td>string (5)</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td>5 digits, e.g. <code>"75201"</code></td></tr>
+<tr><td><code>home_ownership</code></td><td>boolean</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
+
+<tr><td colSpan="7" style={{background: '#1a1a2e', fontWeight: 'bold', padding: '6px 12px'}}>Submission Metadata</td></tr>
+<tr><td><code>ip_address</code></td><td>string</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td>Consumer's IP</td></tr>
+<tr><td><code>user_agent</code></td><td>string (500)</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td>Browser user agent</td></tr>
+<tr><td><code>media_source</code></td><td>string</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td><code>"Google"</code>, <code>"Facebook"</code>, etc.</td></tr>
+<tr><td><code>landing_page</code></td><td>string (500)</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td>URL consumer came from</td></tr>
+<tr><td><code>lead_created_at</code></td><td>timestamp</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td><code>YYYY-MM-DDTHH:mm:ssZ</code></td></tr>
+<tr><td><code>language</code></td><td><code>"en"</code> / <code>"es"</code></td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td>English / Spanish. Default <code>"en"</code></td></tr>
+
+<tr><td colSpan="7" style={{background: '#1a1a2e', fontWeight: 'bold', padding: '6px 12px'}}>Traffic &amp; Campaign</td></tr>
+<tr><td><code>sub_id</code></td><td>string (30)</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td>Sub-affiliate tracking</td></tr>
+<tr><td><code>traffic_channel</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td><code>"cpc"</code> <code>"organic"</code> <code>"display"</code> <code>"social"</code> <code>"email"</code></td></tr>
+<tr><td><code>campaign_name</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
+<tr><td><code>placement_type</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td><code>"thank_you_page"</code> <code>"early_exit"</code> <code>"form_page"</code></td></tr>
+<tr><td><code>search_keyword</code></td><td>string</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
+
+<tr><td colSpan="7" style={{background: '#1a1a2e', fontWeight: 'bold', padding: '6px 12px'}}>Policyholder PII (post only)</td></tr>
+<tr><td><code>trusted_form_url</code></td><td>string</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td><strong>Required for leads.</strong> TrustedForm cert URL.</td></tr>
+<tr><td><code>first_name</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
+<tr><td><code>last_name</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
+<tr><td><code>contact_phone</code></td><td>string (10 digits)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td>Phone consumer consented to be contacted on</td></tr>
+<tr><td><code>dial_in_phone</code></td><td>string (10 digits)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td>Consumer's caller ID (calls only)</td></tr>
+<tr><td><code>email</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
+<tr><td><code>street_address</code></td><td>string (200)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td>Including unit/apt</td></tr>
+<tr><td><code>city</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
+<tr><td><code>middle_name</code></td><td>string</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
+<tr><td><code>mobile_phone</code></td><td>string (10 digits)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td>Only if consumer consented to mobile contact</td></tr>
+<tr><td><code>daytime_phone</code></td><td>string (10 digits)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
+<tr><td><code>evening_phone</code></td><td>string (10 digits)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
+
+<tr><td colSpan="7" style={{background: '#1a1a2e', fontWeight: 'bold', padding: '6px 12px'}}>Demographics &amp; Insurance</td></tr>
+<tr><td><code>credit_status</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td><code>"excellent"</code> <code>"above_average"</code> <code>"average"</code> <code>"below_average"</code> <code>"poor"</code></td></tr>
+<tr><td><code>residence_type</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td><code>"single_family_home"</code> <code>"townhouse"</code> <code>"condo"</code> <code>"apartment"</code> <code>"mobile_home"</code> <code>"other"</code></td></tr>
+<tr><td><code>coverage_type</code></td><td>enum</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td><code>"state_minimum"</code> <code>"basic"</code> <code>"superior"</code> <code>"premium"</code></td></tr>
+<tr><td><code>current_company</code></td><td>enum</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td><code>"Allstate"</code> <code>"Geico"</code> <code>"Progressive"</code> ... see TypeScript types</td></tr>
+<tr><td><code>insured_last_thirty_days</code></td><td>boolean</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
+<tr><td><code>insured_last_five_years</code></td><td>boolean</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
+<tr><td><code>insured_duration</code></td><td>number</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td>Months continuously insured</td></tr>
+<tr><td><code>current_policy_expires</code></td><td>string</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td><code>YYYY-MM-DD</code></td></tr>
+<tr><td><code>current_bi_per_person</code></td><td>number</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
+<tr><td><code>current_bi_per_accident</code></td><td>number</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
+<tr><td><code>current_company_tenure_months</code></td><td>number</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
+<tr><td><code>lapse_reason</code></td><td>enum</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td><code>"military"</code> <code>"no_vehicle"</code> <code>"no_license"</code> <code>"no_need"</code> <code>"other"</code></td></tr>
+<tr><td><code>policy_start_date</code></td><td>string</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td><code>YYYY-MM-DD</code></td></tr>
+<tr><td><code>vehicles_in_household</code></td><td>number</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
+<tr><td><code>years_at_address</code></td><td>number</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
+<tr><td><code>months_at_address</code></td><td>number</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
+
+<tr><td colSpan="7" style={{background: '#1a1a2e', fontWeight: 'bold', padding: '6px 12px'}}>Compliance</td></tr>
+<tr><td><code>tcpa_language</code></td><td>string</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td>TCPA consent language shown</td></tr>
+<tr><td><code>tcpa_json</code></td><td>string</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td>Structured TCPA consent data</td></tr>
+<tr><td><code>leadid_token</code></td><td>string</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td>Jornaya LeadiD token</td></tr>
+
+<tr><td colSpan="7" style={{background: '#1a1a2e', fontWeight: 'bold', padding: '6px 12px'}}>Drivers (1–6 per request)</td></tr>
+<tr><td><code>drivers[]</code></td><td>array</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td>Lead post: <code>drivers[0].relationship_to_policyholder</code> must be <code>"self"</code></td></tr>
+<tr><td><code>.gender</code></td><td>enum</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td><code>"male"</code> <code>"female"</code></td></tr>
+<tr><td><code>.birth_date</code></td><td>string</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td><code>YYYY-MM-DD</code></td></tr>
+<tr><td><code>.marital_status</code></td><td>enum</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td><code>"single"</code> <code>"married"</code> <code>"divorced"</code> <code>"separated"</code> <code>"widowed"</code> <code>"domestic_partnership"</code> <code>"civil_union"</code></td></tr>
+<tr><td><code>.license_status</code></td><td>enum</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td><code>"active"</code> <code>"suspended"</code> <code>"expired"</code> <code>"permit"</code> <code>"no_license"</code></td></tr>
+<tr><td><code>.sr_twenty_two</code></td><td>boolean</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td>Default <code>false</code> if not collected</td></tr>
+<tr><td><code>.dui</code></td><td>boolean</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Ping only. Default <code>false</code></td></tr>
+<tr><td><code>.first_name</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
+<tr><td><code>.last_name</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
+<tr><td><code>.relationship_to_policyholder</code></td><td>enum</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td><code>"self"</code> <code>"spouse"</code> <code>"child"</code> <code>"parent"</code> <code>"sibling"</code> <code>"other"</code></td></tr>
+<tr><td><code>.license_state_or_country</code></td><td>string</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td>US: <code>"CA"</code>. Foreign: <code>"Mexico"</code></td></tr>
+<tr><td><code>.license_number</code></td><td>string</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
+<tr><td><code>.incidents[]</code></td><td>array (0–6)</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td>Omit if none. See Incident Examples.</td></tr>
+
+<tr><td colSpan="7" style={{background: '#1a1a2e', fontWeight: 'bold', padding: '6px 12px'}}>Vehicles (1–6 per request)</td></tr>
+<tr><td><code>vehicles[]</code></td><td>array</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
+<tr><td><code>.year</code></td><td>number</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td>Min 1900</td></tr>
+<tr><td><code>.make</code></td><td>string</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td><code>"Toyota"</code></td></tr>
+<tr><td><code>.model</code></td><td>string</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td><code>"Camry"</code></td></tr>
+<tr><td><code>.primary_purpose</code></td><td>boolean</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td><code>false</code> = personal, <code>true</code> = commercial. Default <code>false</code></td></tr>
+<tr><td><code>.vin</code></td><td>string (17)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
+<tr><td><code>.ownership</code></td><td>enum</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td><code>"fully_paid"</code> <code>"financed"</code> <code>"leased"</code></td></tr>
+<tr><td><code>.annual_mileage</code></td><td>number</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
+<tr><td><code>.license_plate_state</code></td><td>string (2)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td><code>"TX"</code></td></tr>
+</tbody>
+</table>
+
+</div>
 
 ### Incident Examples
 
@@ -841,7 +730,7 @@ interface CallBidResponse {
   status: "bid";
   bid_id: string;
   external_id: string;
-  price: string; // USD, always 2 decimal places, e.g. "4.80"
+  price: string; // USD, always 2 decimal places, e.g. "12.40"
   transfer_phone: string;
   minimum_call_duration: number;
 }
@@ -850,7 +739,7 @@ interface LeadBidResponse {
   status: "bid";
   bid_id: string;
   external_id: string;
-  price: string; // USD, always 2 decimal places, e.g. "0.29"
+  price: string; // USD, always 2 decimal places, e.g. "4.20"
 }
 
 interface DeclineResponse {
