@@ -914,6 +914,7 @@ interface CallPostRequest {
   city?: string;
   state_abbreviation?: string;
   zip?: string;
+  drivers?: LeadPostDriver[]; // Optional driver PII for form-originated calls
 }
 
 // Post drivers contain only PII — risk fields are on the ping
