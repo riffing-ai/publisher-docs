@@ -997,6 +997,7 @@ interface CallStatusResponse {
 interface ErrorResponse {
   status: "error";
   error: string;
+  errors?: string[]; // Detailed per-field validation messages
 }
 
 // ── Enums ──
