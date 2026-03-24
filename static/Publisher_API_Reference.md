@@ -585,6 +585,8 @@ Full realistic payloads showing all nesting. `drivers[0]` is always the policyho
 
 Check the status of an accepted lead or call. The `:id` is the `bid_id` from the ping/post responses.
 
+**Polling guidance:** For calls, poll every 2–5 minutes after the transfer to check if `billable` has flipped to `true`. For leads, status is typically final within seconds of posting — a single check after 30 seconds is sufficient. Webhooks are planned for a future release.
+
 ### Lead Status Response
 
 ```json
