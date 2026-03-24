@@ -354,8 +354,8 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 
 <tr style={{background: "#1a1a2e", color: "white"}}><td colSpan="2" style={{fontWeight: "bold", padding: "6px 12px"}}>Traffic &amp; Campaign</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Lead<br/>Ping</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Lead<br/>Post</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Call<br/>Ping</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Call<br/>Post</td><td></td></tr>
 <tr><td><code>sub_id</code></td><td>string (30)</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Sub-affiliate tracking</td></tr>
-<tr><td><code>campaign_name</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td></td></tr>
-<tr><td><code>media_source</code></td><td>string</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>"Google"</code>, <code>"Facebook"</code>, etc.</td></tr>
+<tr><td><code>campaign_name</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td></td></tr>
+<tr><td><code>media_source</code></td><td>string</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>"Google"</code>, <code>"Facebook"</code>, etc.</td></tr>
 <tr><td><code>traffic_channel</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>"cpc"</code> <code>"organic"</code> <code>"display"</code> <code>"social"</code> <code>"email"</code></td></tr>
 <tr><td><code>placement_type</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>"thank_you_page"</code> <code>"early_exit"</code> <code>"form_page"</code></td></tr>
 <tr><td><code>landing_page</code></td><td>string (500)</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>URL consumer came from</td></tr>
@@ -822,9 +822,9 @@ interface LeadPingRequest {
   media_type: "lead";
   external_id?: string;
   sub_id?: string;
-  media_source: string; // required for leads
+  media_source?: string;
   traffic_channel?: TrafficChannel;
-  campaign_name?: string;
+  campaign_name: string; // required for leads
   placement_type?: PlacementType;
   search_keyword?: string;
   landing_page: string; // required for leads
