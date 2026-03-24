@@ -782,7 +782,7 @@ type Language = "en" | "es";
 interface PingDriver {
   gender: "male" | "female";
   birth_date?: string; // Provide birth_date or age (at least one)
-  age?: number; // 15–99. Use instead of birth_date if PII is a concern
+  age?: number; // 15–99. At least one of birth_date or age required
   marital_status: MaritalStatus;
   relationship_to_policyholder?: "self" | "spouse" | "child" | "parent" | "sibling" | "other";
   license_status: "active" | "suspended" | "revoked" | "expired" | "permit" | "no_license";
