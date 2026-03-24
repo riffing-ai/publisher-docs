@@ -315,148 +315,116 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 
 > **Call posts:** Only `media_type`, `bid_id`, and `dial_in_phone` are required. All other fields are optional — but including lead data improves conversion rates and the price we're willing to pay on future bids.
 
-<div style={{fontSize: '13px'}}>
-
-<table>
-<thead>
-<tr>
-<th rowSpan="2">Field</th>
-<th rowSpan="2">Type</th>
-<th colSpan="2" style={{textAlign: 'center'}}>Lead</th>
-<th colSpan="2" style={{textAlign: 'center'}}>Call</th>
-<th rowSpan="2">Description</th>
-</tr>
-<tr>
-<th style={{textAlign: 'center'}}>Ping</th>
-<th style={{textAlign: 'center'}}>Post</th>
-<th style={{textAlign: 'center'}}>Ping</th>
-<th style={{textAlign: 'center'}}>Post</th>
-</tr>
-</thead>
-<tbody>
-<tr style={{background: "#1a1a2e", color: "white"}}><td colSpan="2" style={{fontWeight: "bold", padding: "6px 12px"}}>Core Fields</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Lead<br/>Ping</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Lead<br/>Post</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Call<br/>Ping</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Call<br/>Post</td><td></td></tr>
-<tr><td><code>media_type</code></td><td><code>"lead"</code> / <code>"call"</code></td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td></td></tr>
-<tr><td><code>bid_id</code></td><td>UUID</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td>From ping response</td></tr>
-<tr><td><code>external_id</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td>Your ID — echoed in responses. Omitted from response if not provided</td></tr>
-<tr><td><code>state_abbreviation</code></td><td>string (2)</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td><code>"TX"</code> — 2 uppercase letters</td></tr>
-<tr><td><code>zip</code></td><td>string (5)</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td>5 digits, e.g. <code>"75201"</code></td></tr>
-<tr><td><code>language</code></td><td><code>"en"</code> / <code>"es"</code></td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td>English / Spanish</td></tr>
-<tr><td><code>currently_insured</code></td><td>boolean</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td>Does the policyholder currently have an active auto insurance policy?</td></tr>
-<tr><td><code>home_ownership</code></td><td>boolean</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Does the policyholder own their home?</td></tr>
-<tr><td><code>sr_twenty_two</code></td><td>boolean</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td>Does the policyholder have an SR-22 filing? Includes SR-1P, FR-44 (FL, VA), and similar state filings</td></tr>
-<tr><td><code>dial_in_phone</code></td><td>string (10 digits)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td>Calls only. The caller ID we use to match the incoming call to your bid</td></tr>
-
-<tr style={{background: "#1a1a2e", color: "white"}}><td colSpan="2" style={{fontWeight: "bold", padding: "6px 12px"}}>Compliance &amp; Consent</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Lead<br/>Ping</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Lead<br/>Post</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Call<br/>Ping</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Call<br/>Post</td><td></td></tr>
-<tr><td><code>trusted_form_url</code></td><td>string (500)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td><strong>Required for leads.</strong> TrustedForm cert URL</td></tr>
-<tr><td><code>tcpa_language</code></td><td>string (2000)</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td>TCPA consent text shown on the form</td></tr>
-<tr><td><code>tcpa_json</code></td><td>string (5000)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td>Structured TCPA consent data (includes consumer IP, timestamp)</td></tr>
-<tr><td><code>leadid_token</code></td><td>string</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td>Jornaya LeadiD token</td></tr>
-
-<tr style={{background: "#1a1a2e", color: "white"}}><td colSpan="2" style={{fontWeight: "bold", padding: "6px 12px"}}>Submission Metadata</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Lead<br/>Ping</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Lead<br/>Post</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Call<br/>Ping</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Call<br/>Post</td><td></td></tr>
-<tr><td><code>ip_address</code></td><td>string</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Consumer's IP</td></tr>
-<tr><td><code>user_agent</code></td><td>string (500)</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Browser user agent</td></tr>
-<tr><td><code>lead_created_at</code></td><td>timestamp</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>YYYY-MM-DDTHH:mm:ssZ</code>. For calls originated from a form, include the timestamp of the original form fill</td></tr>
-
-<tr style={{background: "#1a1a2e", color: "white"}}><td colSpan="2" style={{fontWeight: "bold", padding: "6px 12px"}}>Traffic &amp; Campaign</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Lead<br/>Ping</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Lead<br/>Post</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Call<br/>Ping</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Call<br/>Post</td><td></td></tr>
-<tr><td><code>sub_id</code></td><td>string (30)</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Sub-affiliate tracking ID. Alphanumeric, hyphens, underscores</td></tr>
-<tr><td><code>campaign_name</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td></td></tr>
-<tr><td><code>media_source</code></td><td>string</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>"Google"</code>, <code>"Facebook"</code>, etc.</td></tr>
-<tr><td><code>traffic_channel</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>"cpc"</code> <code>"organic"</code> <code>"display"</code> <code>"social"</code> <code>"email"</code></td></tr>
-<tr><td><code>placement_type</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>"thank_you_page"</code> <code>"early_exit"</code> <code>"form_page"</code></td></tr>
-<tr><td><code>landing_page</code></td><td>string (500)</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>URL consumer came from</td></tr>
-<tr><td><code>search_keyword</code></td><td>string</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td></td></tr>
-
-<tr style={{background: "#1a1a2e", color: "white"}}><td colSpan="2" style={{fontWeight: "bold", padding: "6px 12px"}}>Policyholder Contact &amp; Address (post only)</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Lead<br/>Ping</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Lead<br/>Post</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Call<br/>Ping</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Call<br/>Post</td><td></td></tr>
-<tr><td><code>first_name</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
-<tr><td><code>middle_name</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
-<tr><td><code>last_name</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
-<tr><td><code>street_address</code></td><td>string (200)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td>Including unit/apt</td></tr>
-<tr><td><code>city</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
-<tr><td><code>contact_phone</code></td><td>string (10 digits)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td>Phone the policyholder consented to be contacted on. For calls, often the same as <code>dial_in_phone</code> — but may differ if the consumer calls from one number and consents to contact on another</td></tr>
-<tr><td><code>mobile_phone</code></td><td>string (10 digits)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td>Only if consumer consented to mobile contact</td></tr>
-<tr><td><code>daytime_phone</code></td><td>string (10 digits)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
-<tr><td><code>evening_phone</code></td><td>string (10 digits)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
-<tr><td><code>email</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
-
-<tr style={{background: "#1a1a2e", color: "white"}}><td colSpan="2" style={{fontWeight: "bold", padding: "6px 12px"}}>Demographics &amp; Insurance (Policyholder)</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Lead<br/>Ping</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Lead<br/>Post</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Call<br/>Ping</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Call<br/>Post</td><td></td></tr>
-<tr><td><code>credit_status</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Policyholder's self-reported credit rating: <code>"excellent"</code> <code>"above_average"</code> <code>"average"</code> <code>"below_average"</code> <code>"poor"</code></td></tr>
-<tr><td><code>residence_type</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Policyholder's dwelling type: <code>"single_family_home"</code> <code>"townhouse"</code> <code>"condo"</code> <code>"apartment"</code> <code>"mobile_home"</code> <code>"other"</code></td></tr>
-<tr><td><code>months_at_address</code></td><td>number</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Months at current address. Convert years to months (e.g. 3 years = <code>36</code>)</td></tr>
-<tr><td><code>current_company</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Currently insured policyholder's insurance company: <code>"Allstate"</code> <code>"Geico"</code> <code>"Progressive"</code> ... see TypeScript types</td></tr>
-<tr><td><code>current_company_tenure_months</code></td><td>number</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Months with current insurer. Convert years to months (e.g. 3 years = <code>36</code>)</td></tr>
-<tr><td><code>current_policy_expires</code></td><td>string</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>YYYY-MM-DD</code></td></tr>
-<tr><td><code>current_bi_per_person</code></td><td>number</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Current bodily injury limit per person in dollars, e.g. <code>30000</code></td></tr>
-<tr><td><code>current_bi_per_accident</code></td><td>number</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Current bodily injury limit per accident in dollars, e.g. <code>60000</code></td></tr>
-<tr><td><code>continuous_insurance_duration</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>How long continuously insured: <code>"less_than_6_months"</code> <code>"6_months_to_1_year"</code> <code>"1_to_2_years"</code> <code>"2_to_5_years"</code> <code>"5_plus_years"</code></td></tr>
-<tr><td><code>lapse_duration</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Not currently insured only. How long without insurance: <code>"1-15 days"</code> <code>"16-30 days"</code> <code>"31 days - 6 months"</code> <code>"6 months - 1 year"</code> <code>"1 year - 4 years"</code> <code>"5 years or greater"</code></td></tr>
-<tr><td><code>lapse_reason</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Not currently insured only. Why the policyholder lapsed: <code>"military"</code> <code>"no_vehicle"</code> <code>"no_license"</code> <code>"no_need"</code> <code>"other"</code></td></tr>
-<tr><td><code>coverage_type</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Policyholder's <strong>desired</strong> coverage level for the new policy (not current): <code>"state_minimum"</code> <code>"basic"</code> <code>"superior"</code> <code>"premium"</code></td></tr>
-<tr><td><code>policy_start_date</code></td><td>string</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Policyholder's desired start date for the new policy (<code>YYYY-MM-DD</code>)</td></tr>
-
-<tr style={{background: "#1a1a2e", color: "white"}}><td colSpan="2" style={{fontWeight: "bold", padding: "6px 12px"}}>drivers[] — Driver Array (1–6, policyholder = drivers[0])</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Lead<br/>Ping</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Lead<br/>Post</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Call<br/>Ping</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Call<br/>Post</td><td></td></tr>
-<tr><td><code>drivers[]</code></td><td>array</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td>Ping: risk data. Post: PII only (names, relationship, license number)</td></tr>
-<tr><td><code>.first_name</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
-<tr><td><code>.middle_name</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
-<tr><td><code>.last_name</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
-<tr><td><code>.relationship_to_policyholder</code></td><td>enum</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td><code>"self"</code> <code>"spouse"</code> <code>"child"</code> <code>"parent"</code> <code>"sibling"</code> <code>"other"</code> — <code>"self"</code> must always be <code>drivers[0]</code></td></tr>
-<tr><td><code>.birth_date</code></td><td>string</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td><code>YYYY-MM-DD</code></td></tr>
-<tr><td><code>.gender</code></td><td>enum</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td><code>"male"</code> <code>"female"</code></td></tr>
-<tr><td><code>.marital_status</code></td><td>enum</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td><code>"single"</code> <code>"married"</code> <code>"divorced"</code> <code>"separated"</code> <code>"widowed"</code> <code>"domestic_partnership"</code> <code>"civil_union"</code></td></tr>
-<tr><td><code>.us_resident_past_twelve_months</code></td><td>boolean</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Has driver been a US resident for the past 12 months?</td></tr>
-<tr><td><code>.license_status</code></td><td>enum</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td><code>"active"</code> <code>"suspended"</code> <code>"revoked"</code> <code>"expired"</code> <code>"permit"</code> <code>"no_license"</code></td></tr>
-<tr><td><code>.license_state_or_country</code></td><td>string</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>US: <code>"CA"</code>. Foreign: <code>"Mexico"</code></td></tr>
-<tr><td><code>.license_number</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
-<tr><td><code>.age_first_licensed</code></td><td>number (14–99)</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Age when first licensed</td></tr>
-<tr><td><code>.first_licensed_date</code></td><td>string</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>YYYY-MM-DD</code> — Date first licensed</td></tr>
-<tr><td><code>.suspended_or_revoked_past_five_years</code></td><td>boolean</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>License suspended or revoked in the past 5 years?</td></tr>
-<tr><td><code>.suspension_reason</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>"driving_related"</code> <code>"non_driving_related"</code> <code>"failed_medical_exam"</code> <code>"failed_exam"</code> <code>"failed_to_comply"</code></td></tr>
-<tr><td><code>.employment_status</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>"company"</code> <code>"self"</code> <code>"military"</code> <code>"government"</code> <code>"retired"</code> <code>"student"</code> <code>"homemaker"</code> <code>"unemployed"</code></td></tr>
-<tr><td><code>.education</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>"less_than_high_school"</code> <code>"vocational"</code> <code>"high_school"</code> <code>"high_school_pursuing_bachelors"</code> <code>"associate"</code> <code>"associate_pursuing_bachelors"</code> <code>"bachelors"</code> <code>"bachelors_pursuing_graduate"</code> <code>"masters"</code> <code>"doctors"</code> <code>"lawyer"</code> <code>"phd"</code></td></tr>
-<tr><td><code>.occupation</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Driver's occupation</td></tr>
-<tr><td><code>.industry</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>"financial"</code> <code>"agriculture"</code> <code>"arts"</code> <code>"assistants"</code> <code>"automotive"</code> <code>"cleaning"</code> <code>"computers"</code> <code>"construction"</code> <code>"counseling"</code> <code>"education"</code> <code>"engineering"</code> <code>"executives"</code> <code>"health"</code> <code>"law"</code> <code>"operators"</code> <code>"postal"</code> <code>"maintenance"</code> <code>"service"</code> <code>"food"</code> <code>"sales"</code> <code>"science"</code> <code>"travel"</code></td></tr>
-<tr><td><code>.government_employment_type</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>"federal_employee"</code> <code>"city_state_employee"</code></td></tr>
-<tr><td><code>.student_type</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>"high_school_student"</code> <code>"technical_vocational_student"</code> <code>"freshman_undergraduate"</code> <code>"sophomore_undergraduate"</code> <code>"junior_undergraduate"</code> <code>"senior_undergraduate"</code> <code>"graduate_student"</code> <code>"law_student"</code> <code>"medical_student"</code></td></tr>
-<tr><td><code>.military_affiliation</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>"active_duty"</code> <code>"military_retiree"</code> <code>"veteran"</code> <code>"military_academy_cadet"</code> <code>"national_guard"</code> <code>"military_reserves"</code></td></tr>
-<tr><td><code>.bankruptcy</code></td><td>boolean</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Has this driver filed for bankruptcy?</td></tr>
-<tr><td><code>.incidents[]</code></td><td>array (0–6)</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Ping-only. Omit if none</td></tr>
-
-<tr style={{background: "#1a1a2e", color: "white"}}><td colSpan="2" style={{fontWeight: "bold", padding: "6px 12px"}}>drivers[].incidents[] — Incidents per Driver (0–6)</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Lead<br/>Ping</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Lead<br/>Post</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Call<br/>Ping</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Call<br/>Post</td><td></td></tr>
-<tr><td><code>.type</code></td><td>enum</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td><code>"accident"</code> <code>"violation"</code> <code>"claim"</code> — required when incident is provided</td></tr>
-<tr><td><code>.incident_date</code></td><td>string</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>YYYY-MM-DD</code></td></tr>
-<tr><td><code>.fault_status</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Accidents only: <code>"not_at_fault"</code> <code>"less_than_50_percent"</code> <code>"majority_at_fault"</code></td></tr>
-<tr><td><code>.damage_type</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Accidents only: <code>"property_only"</code> <code>"bodily_injury"</code> <code>"property_and_bodily_injury"</code></td></tr>
-<tr><td><code>.violation_type</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Violations only: <code>"driving_under_the_influence"</code> <code>"speeding"</code> <code>"driving_while_using_a_cell_phone"</code> <code>"other"</code></td></tr>
-<tr><td><code>.violation_type_other</code></td><td>string</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>If violation_type is <code>"other"</code>, describe the violation</td></tr>
-<tr><td><code>.claim_type</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Claims only: <code>"theft"</code> <code>"vandalism"</code> <code>"glass_repair"</code> <code>"other"</code></td></tr>
-<tr><td><code>.claim_amount</code></td><td>number</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Dollar amount of the claim</td></tr>
-
-<tr style={{background: "#1a1a2e", color: "white"}}><td colSpan="2" style={{fontWeight: "bold", padding: "6px 12px"}}>vehicles[] — Vehicle Array (1–6)</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Lead<br/>Ping</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Lead<br/>Post</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Call<br/>Ping</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Call<br/>Post</td><td></td></tr>
-<tr><td><code>vehicles[]</code></td><td>array</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Ping-only. All vehicle data is sent on the ping</td></tr>
-<tr><td><code>.year</code></td><td>number</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td>Min 1900</td></tr>
-<tr><td><code>.make</code></td><td>string</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td><code>"Toyota"</code></td></tr>
-<tr><td><code>.model</code></td><td>string</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td><code>"Camry"</code></td></tr>
-<tr><td><code>.trim</code></td><td>string</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>e.g. <code>"LE"</code>, <code>"SE"</code></td></tr>
-<tr><td><code>.vin</code></td><td>string (17)</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Exactly 17 characters</td></tr>
-<tr><td><code>.license_plate_state</code></td><td>string (2)</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>"TX"</code></td></tr>
-<tr><td><code>.license_plate</code></td><td>string</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>License plate number</td></tr>
-<tr><td><code>.commercial_use</code></td><td>boolean</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Is this vehicle used for commercial/business purposes? Default <code>false</code></td></tr>
-<tr><td><code>.type_of_commercial_use</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>"clergy"</code> <code>"courier_service"</code> <code>"daycare"</code> <code>"delivery_fast_food"</code> <code>"delivery_retail_wholesale"</code> <code>"delivery_route"</code> <code>"delivery_us_mail"</code> <code>"delivery_and_sales"</code> <code>"doctor_professional"</code> <code>"farm_use"</code> <code>"lawyer_professional"</code> <code>"real_estate"</code> <code>"repair_installation"</code> <code>"ridesharing"</code> <code>"sales_multistate"</code> <code>"sales_route"</code> <code>"sales_calls"</code> <code>"social_worker"</code> <code>"transport_people"</code> <code>"travel_to_jobsites"</code> <code>"travel_to_meetings"</code> <code>"visit_clients"</code> <code>"visit_outside_offices"</code>. Map rideshare (Uber, Lyft) to <code>"transport_people"</code></td></tr>
-<tr><td><code>.primary_driver</code></td><td>boolean</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Is this the primary driver of this vehicle?</td></tr>
-<tr><td><code>.ownership</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>"fully_paid"</code> <code>"financed"</code> <code>"leased"</code></td></tr>
-<tr><td><code>.vehicle_purchased_new</code></td><td>boolean</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Was the vehicle purchased new?</td></tr>
-<tr><td><code>.vehicle_purchase_date</code></td><td>string</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>YYYY-MM-DD</code> — Date vehicle was purchased</td></tr>
-<tr><td><code>.annual_mileage</code></td><td>number</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Estimated annual miles driven</td></tr>
-<tr><td><code>.current_mileage</code></td><td>number</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Current odometer reading</td></tr>
-<tr><td><code>.average_mileage</code></td><td>number</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Average miles driven per day</td></tr>
-<tr><td><code>.commute_distance</code></td><td>number (0–500)</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>One-way commute distance in miles</td></tr>
-<tr><td><code>.commute_days_per_week</code></td><td>number (0–7)</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Days per week driven to work</td></tr>
-<tr><td><code>.alarm</code></td><td>boolean</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Vehicle has anti-theft alarm?</td></tr>
-<tr><td><code>.parking</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>"driveway"</code> <code>"private_garage"</code> <code>"parking_garage"</code> <code>"parking_lot"</code> <code>"street"</code></td></tr>
-</tbody>
-</table>
-
-</div>
-
+| Core Fields | LeadPing | LeadPost | CallPing | CallPost |  |  |
+| `media_type` | `"lead"` / `"call"` | ✅ | ✅ | ✅ | ✅ |  |
+| `bid_id` | UUID | — | ✅ | — | ✅ | From ping response |
+| `external_id` | string (100) | ○ | ○ | ○ | ○ | Your ID — echoed in responses. Omitted from response if not provided |
+| `state_abbreviation` | string (2) | ✅ | ✅ | ✅ | ○ | `"TX"` — 2 uppercase letters |
+| `zip` | string (5) | ✅ | ✅ | ○ | ○ | 5 digits, e.g. `"75201"` |
+| `language` | `"en"` / `"es"` | ✅ | ○ | ✅ | ○ | English / Spanish |
+| `currently_insured` | boolean | ✅ | — | ✅ | — | Does the policyholder currently have an active auto insurance policy? |
+| `home_ownership` | boolean | ✅ | — | ○ | — | Does the policyholder own their home? |
+| `sr_twenty_two` | boolean | ✅ | — | ✅ | — | Does the policyholder have an SR-22 filing? Includes SR-1P, FR-44 (FL, VA), and similar state filings |
+| `dial_in_phone` | string (10 digits) | — | — | — | ✅ | Calls only. The caller ID we use to match the incoming call to your bid |
+| Compliance &amp; Consent | LeadPing | LeadPost | CallPing | CallPost |  |  |
+| `trusted_form_url` | string (500) | — | ✅ | — | ○ | **Required for leads.** TrustedForm cert URL |
+| `tcpa_language` | string (2000) | ○ | ○ | ○ | ○ | TCPA consent text shown on the form |
+| `tcpa_json` | string (5000) | — | ○ | — | ○ | Structured TCPA consent data (includes consumer IP, timestamp) |
+| `leadid_token` | string | — | ○ | — | ○ | Jornaya LeadiD token |
+| Submission Metadata | LeadPing | LeadPost | CallPing | CallPost |  |  |
+| `ip_address` | string | ✅ | — | ○ | — | Consumer's IP |
+| `user_agent` | string (500) | ✅ | — | ○ | — | Browser user agent |
+| `lead_created_at` | timestamp | ✅ | — | ○ | — | `YYYY-MM-DDTHH:mm:ssZ`. For calls originated from a form, include the timestamp of the original form fill |
+| Traffic &amp; Campaign | LeadPing | LeadPost | CallPing | CallPost |  |  |
+| `sub_id` | string (30) | ○ | — | ○ | — | Sub-affiliate tracking ID. Alphanumeric, hyphens, underscores |
+| `campaign_name` | string (100) | ✅ | — | ○ | — |  |
+| `media_source` | string | ○ | — | ○ | — | `"Google"`, `"Facebook"`, etc. |
+| `traffic_channel` | enum | ○ | — | ○ | — | `"cpc"` `"organic"` `"display"` `"social"` `"email"` |
+| `placement_type` | enum | ○ | — | ○ | — | `"thank_you_page"` `"early_exit"` `"form_page"` |
+| `landing_page` | string (500) | ✅ | — | ○ | — | URL consumer came from |
+| `search_keyword` | string | ○ | — | ○ | — |  |
+| Policyholder Contact &amp; Address (post only) | LeadPing | LeadPost | CallPing | CallPost |  |  |
+| `first_name` | string (100) | — | ✅ | — | ○ |  |
+| `middle_name` | string (100) | — | ○ | — | ○ |  |
+| `last_name` | string (100) | — | ✅ | — | ○ |  |
+| `street_address` | string (200) | — | ✅ | — | ○ | Including unit/apt |
+| `city` | string (100) | — | ✅ | — | ○ |  |
+| `contact_phone` | string (10 digits) | — | ✅ | — | ○ | Phone the policyholder consented to be contacted on. For calls, often the same as `dial_in_phone` — but may differ if the consumer calls from one number and consents to contact on another |
+| `mobile_phone` | string (10 digits) | — | ○ | — | ○ | Only if consumer consented to mobile contact |
+| `daytime_phone` | string (10 digits) | — | ○ | — | ○ |  |
+| `evening_phone` | string (10 digits) | — | ○ | — | ○ |  |
+| `email` | string (100) | — | ✅ | — | ○ |  |
+| Demographics &amp; Insurance (Policyholder) | LeadPing | LeadPost | CallPing | CallPost |  |  |
+| `credit_status` | enum | ○ | — | ○ | — | Policyholder's self-reported credit rating: `"excellent"` `"above_average"` `"average"` `"below_average"` `"poor"` |
+| `residence_type` | enum | ○ | — | ○ | — | Policyholder's dwelling type: `"single_family_home"` `"townhouse"` `"condo"` `"apartment"` `"mobile_home"` `"other"` |
+| `months_at_address` | number | ○ | — | ○ | — | Months at current address. Convert years to months (e.g. 3 years = `36`) |
+| `current_company` | enum | ○ | — | ○ | — | Currently insured policyholder's insurance company: `"Allstate"` `"Geico"` `"Progressive"` ... see TypeScript types |
+| `current_company_tenure_months` | number | ○ | — | ○ | — | Months with current insurer. Convert years to months (e.g. 3 years = `36`) |
+| `current_policy_expires` | string | ○ | — | ○ | — | `YYYY-MM-DD` |
+| `current_bi_per_person` | number | ○ | — | ○ | — | Current bodily injury limit per person in dollars, e.g. `30000` |
+| `current_bi_per_accident` | number | ○ | — | ○ | — | Current bodily injury limit per accident in dollars, e.g. `60000` |
+| `continuous_insurance_duration` | enum | ○ | — | ○ | — | How long continuously insured: `"less_than_6_months"` `"6_months_to_1_year"` `"1_to_2_years"` `"2_to_5_years"` `"5_plus_years"` |
+| `lapse_duration` | enum | ○ | — | ○ | — | Not currently insured only. How long without insurance: `"1-15 days"` `"16-30 days"` `"31 days - 6 months"` `"6 months - 1 year"` `"1 year - 4 years"` `"5 years or greater"` |
+| `lapse_reason` | enum | ○ | — | ○ | — | Not currently insured only. Why the policyholder lapsed: `"military"` `"no_vehicle"` `"no_license"` `"no_need"` `"other"` |
+| `coverage_type` | enum | ○ | — | ○ | — | Policyholder's **desired** coverage level for the new policy (not current): `"state_minimum"` `"basic"` `"superior"` `"premium"` |
+| `policy_start_date` | string | ○ | — | ○ | — | Policyholder's desired start date for the new policy (`YYYY-MM-DD`) |
+| drivers[] — Driver Array (1–6, policyholder = drivers[0]) | LeadPing | LeadPost | CallPing | CallPost |  |  |
+| `drivers[]` | array | ✅ | ✅ | ○ | ○ | Ping: risk data. Post: PII only (names, relationship, license number) |
+| `.first_name` | string (100) | — | ✅ | — | ○ |  |
+| `.middle_name` | string (100) | — | ○ | — | ○ |  |
+| `.last_name` | string (100) | — | ✅ | — | ○ |  |
+| `.relationship_to_policyholder` | enum | — | ✅ | — | ○ | `"self"` `"spouse"` `"child"` `"parent"` `"sibling"` `"other"` — `"self"` must always be `drivers[0]` |
+| `.birth_date` | string | ✅ | — | ✅ | — | `YYYY-MM-DD` |
+| `.gender` | enum | ✅ | — | ✅ | — | `"male"` `"female"` |
+| `.marital_status` | enum | ✅ | — | ✅ | — | `"single"` `"married"` `"divorced"` `"separated"` `"widowed"` `"domestic_partnership"` `"civil_union"` |
+| `.us_resident_past_twelve_months` | boolean | ○ | — | ○ | — | Has driver been a US resident for the past 12 months? |
+| `.license_status` | enum | ✅ | — | ✅ | — | `"active"` `"suspended"` `"revoked"` `"expired"` `"permit"` `"no_license"` |
+| `.license_state_or_country` | string | ○ | — | ○ | — | US: `"CA"`. Foreign: `"Mexico"` |
+| `.license_number` | string (100) | — | ○ | — | ○ |  |
+| `.age_first_licensed` | number (14–99) | ○ | — | ○ | — | Age when first licensed |
+| `.first_licensed_date` | string | ○ | — | ○ | — | `YYYY-MM-DD` — Date first licensed |
+| `.suspended_or_revoked_past_five_years` | boolean | ○ | — | ○ | — | License suspended or revoked in the past 5 years? |
+| `.suspension_reason` | enum | ○ | — | ○ | — | `"driving_related"` `"non_driving_related"` `"failed_medical_exam"` `"failed_exam"` `"failed_to_comply"` |
+| `.employment_status` | enum | ○ | — | ○ | — | `"company"` `"self"` `"military"` `"government"` `"retired"` `"student"` `"homemaker"` `"unemployed"` |
+| `.education` | enum | ○ | — | ○ | — | `"less_than_high_school"` `"vocational"` `"high_school"` `"high_school_pursuing_bachelors"` `"associate"` `"associate_pursuing_bachelors"` `"bachelors"` `"bachelors_pursuing_graduate"` `"masters"` `"doctors"` `"lawyer"` `"phd"` |
+| `.occupation` | string (100) | ○ | — | ○ | — | Driver's occupation |
+| `.industry` | enum | ○ | — | ○ | — | `"financial"` `"agriculture"` `"arts"` `"assistants"` `"automotive"` `"cleaning"` `"computers"` `"construction"` `"counseling"` `"education"` `"engineering"` `"executives"` `"health"` `"law"` `"operators"` `"postal"` `"maintenance"` `"service"` `"food"` `"sales"` `"science"` `"travel"` |
+| `.government_employment_type` | enum | ○ | — | ○ | — | `"federal_employee"` `"city_state_employee"` |
+| `.student_type` | enum | ○ | — | ○ | — | `"high_school_student"` `"technical_vocational_student"` `"freshman_undergraduate"` `"sophomore_undergraduate"` `"junior_undergraduate"` `"senior_undergraduate"` `"graduate_student"` `"law_student"` `"medical_student"` |
+| `.military_affiliation` | enum | ○ | — | ○ | — | `"active_duty"` `"military_retiree"` `"veteran"` `"military_academy_cadet"` `"national_guard"` `"military_reserves"` |
+| `.bankruptcy` | boolean | ○ | — | ○ | — | Has this driver filed for bankruptcy? |
+| `.incidents[]` | array (0–6) | ○ | — | ○ | — | Ping-only. Omit if none |
+| drivers[].incidents[] — Incidents per Driver (0–6) | LeadPing | LeadPost | CallPing | CallPost |  |  |
+| `.type` | enum | ✅ | — | ✅ | — | `"accident"` `"violation"` `"claim"` — required when incident is provided |
+| `.incident_date` | string | ○ | — | ○ | — | `YYYY-MM-DD` |
+| `.fault_status` | enum | ○ | — | ○ | — | Accidents only: `"not_at_fault"` `"less_than_50_percent"` `"majority_at_fault"` |
+| `.damage_type` | enum | ○ | — | ○ | — | Accidents only: `"property_only"` `"bodily_injury"` `"property_and_bodily_injury"` |
+| `.violation_type` | enum | ○ | — | ○ | — | Violations only: `"driving_under_the_influence"` `"speeding"` `"driving_while_using_a_cell_phone"` `"other"` |
+| `.violation_type_other` | string | ○ | — | ○ | — | If violation_type is `"other"`, describe the violation |
+| `.claim_type` | enum | ○ | — | ○ | — | Claims only: `"theft"` `"vandalism"` `"glass_repair"` `"other"` |
+| `.claim_amount` | number | ○ | — | ○ | — | Dollar amount of the claim |
+| vehicles[] — Vehicle Array (1–6) | LeadPing | LeadPost | CallPing | CallPost |  |  |
+| `vehicles[]` | array | ✅ | — | ○ | — | Ping-only. All vehicle data is sent on the ping |
+| `.year` | number | ✅ | — | ✅ | — | Min 1900 |
+| `.make` | string | ✅ | — | ✅ | — | `"Toyota"` |
+| `.model` | string | ✅ | — | ✅ | — | `"Camry"` |
+| `.trim` | string | ○ | — | ○ | — | e.g. `"LE"`, `"SE"` |
+| `.vin` | string (17) | ○ | — | ○ | — | Exactly 17 characters |
+| `.license_plate_state` | string (2) | ○ | — | ○ | — | `"TX"` |
+| `.license_plate` | string | ○ | — | ○ | — | License plate number |
+| `.commercial_use` | boolean | ✅ | — | ○ | — | Is this vehicle used for commercial/business purposes? Default `false` |
+| `.type_of_commercial_use` | enum | ○ | — | ○ | — | `"clergy"` `"courier_service"` `"daycare"` `"delivery_fast_food"` `"delivery_retail_wholesale"` `"delivery_route"` `"delivery_us_mail"` `"delivery_and_sales"` `"doctor_professional"` `"farm_use"` `"lawyer_professional"` `"real_estate"` `"repair_installation"` `"ridesharing"` `"sales_multistate"` `"sales_route"` `"sales_calls"` `"social_worker"` `"transport_people"` `"travel_to_jobsites"` `"travel_to_meetings"` `"visit_clients"` `"visit_outside_offices"`. Map rideshare (Uber, Lyft) to `"transport_people"` |
+| `.primary_driver` | boolean | ○ | — | ○ | — | Is this the primary driver of this vehicle? |
+| `.ownership` | enum | ○ | — | ○ | — | `"fully_paid"` `"financed"` `"leased"` |
+| `.vehicle_purchased_new` | boolean | ○ | — | ○ | — | Was the vehicle purchased new? |
+| `.vehicle_purchase_date` | string | ○ | — | ○ | — | `YYYY-MM-DD` — Date vehicle was purchased |
+| `.annual_mileage` | number | ○ | — | ○ | — | Estimated annual miles driven |
+| `.current_mileage` | number | ○ | — | ○ | — | Current odometer reading |
+| `.average_mileage` | number | ○ | — | ○ | — | Average miles driven per day |
+| `.commute_distance` | number (0–500) | ○ | — | ○ | — | One-way commute distance in miles |
+| `.commute_days_per_week` | number (0–7) | ○ | — | ○ | — | Days per week driven to work |
+| `.alarm` | boolean | ○ | — | ○ | — | Vehicle has anti-theft alarm? |
+| `.parking` | enum | ○ | — | ○ | — | `"driveway"` `"private_garage"` `"parking_garage"` `"parking_lot"` `"street"` |
 ---
 
 ## Detailed Examples
