@@ -413,7 +413,7 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 <tr><td><code>.last_name</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
 <tr><td><code>.relationship_to_policyholder</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td><code>"self"</code> <code>"spouse"</code> <code>"child"</code> <code>"parent"</code> <code>"sibling"</code> <code>"other"</code> — <code>"self"</code> must always be <code>drivers[0]</code></td></tr>
 <tr><td><code>.birth_date</code></td><td>string</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td><code>YYYY-MM-DD</code>. Ping: provide <code>birth_date</code> or <code>age</code> (at least one). Post: include if available — improves conversion, and ultimately pricing</td></tr>
-<tr><td><code>.age</code></td><td>number (15–99)</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Driver's age in years. Use instead of <code>birth_date</code> if PII is a concern on pings</td></tr>
+<tr><td><code>.age</code></td><td>number (14–99)</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Driver's age in years. Use instead of <code>birth_date</code> if PII is a concern on pings</td></tr>
 <tr><td><code>.gender</code></td><td>enum</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td><code>"male"</code> <code>"female"</code></td></tr>
 <tr><td><code>.marital_status</code></td><td>enum</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td><code>"single"</code> <code>"married"</code> <code>"divorced"</code> <code>"separated"</code> <code>"widowed"</code> <code>"domestic_partnership"</code> <code>"civil_union"</code></td></tr>
 <tr><td><code>.us_resident_past_twelve_months</code></td><td>boolean</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Has driver been a US resident for the past 12 months?</td></tr>
@@ -782,7 +782,7 @@ type Language = "en" | "es";
 interface PingDriver {
   gender: "male" | "female";
   birth_date?: string; // Provide birth_date or age (at least one)
-  age?: number; // 15–99. At least one of birth_date or age required
+  age?: number; // 14–99. At least one of birth_date or age required
   marital_status: MaritalStatus;
   relationship_to_policyholder?: "self" | "spouse" | "child" | "parent" | "sibling" | "other";
   license_status: "active" | "suspended" | "revoked" | "expired" | "permit" | "no_license";
