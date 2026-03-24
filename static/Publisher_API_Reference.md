@@ -332,7 +332,7 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 | `external_id` | string (100) | ○ | ○ | ○ | ○ | Your ID — echoed in responses. Omitted from response if not provided |
 | `state_abbreviation` | string (2) | ✅ | ✅ | ✅ | ○ | `"TX"` — 2 uppercase letters |
 | `zip` | string (5) | ✅ | ✅ | ○ | ○ | 5 digits, e.g. `"75201"` |
-| `language` | `"en"` / `"es"` | ✅ | ○ | ✅ | ○ | English / Spanish |
+| `language` | `"en"` / `"es"` | ○ | ○ | ✅ | ○ | English / Spanish. Required for calls |
 | `currently_insured` | boolean | ✅ | — | ✅ | — | Does the policyholder currently have an active auto insurance policy? |
 | `home_ownership` | boolean | ✅ | — | ○ | — | Does the policyholder own their home? |
 | `sr_twenty_two` | boolean | ✅ | — | ✅ | — | `true` if **any** driver in the household has an SR-22, FR-44, or similar filing. For per-driver detail, use `.sr_twenty_two` on each driver |
@@ -722,7 +722,7 @@ Must contain `@` and a domain with `.`. Max 100 characters.
 If provided, exactly 17 characters.
 
 ### Language
-`"en"` (English) or `"es"` (Spanish). Required for all pings. Optional on posts.
+`"en"` (English) or `"es"` (Spanish). Required for call pings, optional for leads.
 
 ### Arrays
 - `drivers`: 1–6 (required for lead pings and posts, optional for call pings)
@@ -857,7 +857,7 @@ interface LeadPingRequest {
   home_ownership: boolean; // required for leads
   credit_status?: CreditStatus;
   residence_type?: ResidenceType;
-  language: Language; // required for leads
+  language?: Language;
   drivers: LeadPingDriver[]; // required, 1–6
   vehicles: LeadPingVehicle[]; // required, 1–6
 }
