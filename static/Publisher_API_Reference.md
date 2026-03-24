@@ -315,7 +315,11 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 
 > **Call posts:** Only `media_type`, `bid_id`, and `dial_in_phone` are required. All other fields are optional — but including lead data improves conversion rates and the price we're willing to pay on future bids.
 
-| Core Fields | Lead Ping | Lead Post | Call Ping | Call Post |  |  |
+
+### Core Fields
+
+| Field | Type | Lead Ping | Lead Post | Call Ping | Call Post | Description |
+|-------|------|-----------|-----------|-----------|-----------|-------------|
 | `media_type` | `"lead"` / `"call"` | ✅ | ✅ | ✅ | ✅ |  |
 | `bid_id` | UUID | — | ✅ | — | ✅ | From ping response |
 | `external_id` | string (100) | ○ | ○ | ○ | ○ | Your ID — echoed in responses. Omitted from response if not provided |
@@ -326,16 +330,28 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 | `home_ownership` | boolean | ✅ | — | ○ | — | Does the policyholder own their home? |
 | `sr_twenty_two` | boolean | ✅ | — | ✅ | — | Does the policyholder have an SR-22 filing? Includes SR-1P, FR-44 (FL, VA), and similar state filings |
 | `dial_in_phone` | string (10 digits) | — | — | — | ✅ | Calls only. The caller ID we use to match the incoming call to your bid |
-| Compliance & Consent | Lead Ping | Lead Post | Call Ping | Call Post |  |  |
+
+### Compliance & Consent
+
+| Field | Type | Lead Ping | Lead Post | Call Ping | Call Post | Description |
+|-------|------|-----------|-----------|-----------|-----------|-------------|
 | `trusted_form_url` | string (500) | — | ✅ | — | ○ | **Required for leads.** TrustedForm cert URL |
 | `tcpa_language` | string (2000) | ○ | ○ | ○ | ○ | TCPA consent text shown on the form |
 | `tcpa_json` | string (5000) | — | ○ | — | ○ | Structured TCPA consent data (includes consumer IP, timestamp) |
 | `leadid_token` | string | — | ○ | — | ○ | Jornaya LeadiD token |
-| Submission Metadata | Lead Ping | Lead Post | Call Ping | Call Post |  |  |
+
+### Submission Metadata
+
+| Field | Type | Lead Ping | Lead Post | Call Ping | Call Post | Description |
+|-------|------|-----------|-----------|-----------|-----------|-------------|
 | `ip_address` | string | ✅ | — | ○ | — | Consumer's IP |
 | `user_agent` | string (500) | ✅ | — | ○ | — | Browser user agent |
 | `lead_created_at` | timestamp | ✅ | — | ○ | — | `YYYY-MM-DDTHH:mm:ssZ`. For calls originated from a form, include the timestamp of the original form fill |
-| Traffic & Campaign | Lead Ping | Lead Post | Call Ping | Call Post |  |  |
+
+### Traffic & Campaign
+
+| Field | Type | Lead Ping | Lead Post | Call Ping | Call Post | Description |
+|-------|------|-----------|-----------|-----------|-----------|-------------|
 | `sub_id` | string (30) | ○ | — | ○ | — | Sub-affiliate tracking ID. Alphanumeric, hyphens, underscores |
 | `campaign_name` | string (100) | ✅ | — | ○ | — |  |
 | `media_source` | string | ○ | — | ○ | — | `"Google"`, `"Facebook"`, etc. |
@@ -343,7 +359,11 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 | `placement_type` | enum | ○ | — | ○ | — | `"thank_you_page"` `"early_exit"` `"form_page"` |
 | `landing_page` | string (500) | ✅ | — | ○ | — | URL consumer came from |
 | `search_keyword` | string | ○ | — | ○ | — |  |
-| Policyholder Contact & Address (post only) | Lead Ping | Lead Post | Call Ping | Call Post |  |  |
+
+### Policyholder Contact & Address (post only)
+
+| Field | Type | Lead Ping | Lead Post | Call Ping | Call Post | Description |
+|-------|------|-----------|-----------|-----------|-----------|-------------|
 | `first_name` | string (100) | — | ✅ | — | ○ |  |
 | `middle_name` | string (100) | — | ○ | — | ○ |  |
 | `last_name` | string (100) | — | ✅ | — | ○ |  |
@@ -354,7 +374,11 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 | `daytime_phone` | string (10 digits) | — | ○ | — | ○ |  |
 | `evening_phone` | string (10 digits) | — | ○ | — | ○ |  |
 | `email` | string (100) | — | ✅ | — | ○ |  |
-| Demographics & Insurance (Policyholder) | Lead Ping | Lead Post | Call Ping | Call Post |  |  |
+
+### Demographics & Insurance (Policyholder)
+
+| Field | Type | Lead Ping | Lead Post | Call Ping | Call Post | Description |
+|-------|------|-----------|-----------|-----------|-----------|-------------|
 | `credit_status` | enum | ○ | — | ○ | — | Policyholder's self-reported credit rating: `"excellent"` `"above_average"` `"average"` `"below_average"` `"poor"` |
 | `residence_type` | enum | ○ | — | ○ | — | Policyholder's dwelling type: `"single_family_home"` `"townhouse"` `"condo"` `"apartment"` `"mobile_home"` `"other"` |
 | `months_at_address` | number | ○ | — | ○ | — | Months at current address. Convert years to months (e.g. 3 years = `36`) |
@@ -368,7 +392,11 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 | `lapse_reason` | enum | ○ | — | ○ | — | Not currently insured only. Why the policyholder lapsed: `"military"` `"no_vehicle"` `"no_license"` `"no_need"` `"other"` |
 | `coverage_type` | enum | ○ | — | ○ | — | Policyholder's **desired** coverage level for the new policy (not current): `"state_minimum"` `"basic"` `"superior"` `"premium"` |
 | `policy_start_date` | string | ○ | — | ○ | — | Policyholder's desired start date for the new policy (`YYYY-MM-DD`) |
-| drivers[] — Driver Array (1–6, policyholder = drivers[0]) | Lead Ping | Lead Post | Call Ping | Call Post |  |  |
+
+### drivers[] — Driver Array (1–6, policyholder = drivers[0])
+
+| Field | Type | Lead Ping | Lead Post | Call Ping | Call Post | Description |
+|-------|------|-----------|-----------|-----------|-----------|-------------|
 | `drivers[]` | array | ✅ | ✅ | ○ | ○ | Ping: risk data. Post: PII only (names, relationship, license number) |
 | `.first_name` | string (100) | — | ✅ | — | ○ |  |
 | `.middle_name` | string (100) | — | ○ | — | ○ |  |
@@ -394,7 +422,11 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 | `.military_affiliation` | enum | ○ | — | ○ | — | `"active_duty"` `"military_retiree"` `"veteran"` `"military_academy_cadet"` `"national_guard"` `"military_reserves"` |
 | `.bankruptcy` | boolean | ○ | — | ○ | — | Has this driver filed for bankruptcy? |
 | `.incidents[]` | array (0–6) | ○ | — | ○ | — | Ping-only. Omit if none |
-| drivers[].incidents[] — Incidents per Driver (0–6) | Lead Ping | Lead Post | Call Ping | Call Post |  |  |
+
+### drivers[].incidents[] — Incidents per Driver (0–6)
+
+| Field | Type | Lead Ping | Lead Post | Call Ping | Call Post | Description |
+|-------|------|-----------|-----------|-----------|-----------|-------------|
 | `.type` | enum | ✅ | — | ✅ | — | `"accident"` `"violation"` `"claim"` — required when incident is provided |
 | `.incident_date` | string | ○ | — | ○ | — | `YYYY-MM-DD` |
 | `.fault_status` | enum | ○ | — | ○ | — | Accidents only: `"not_at_fault"` `"less_than_50_percent"` `"majority_at_fault"` |
@@ -403,7 +435,11 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 | `.violation_type_other` | string | ○ | — | ○ | — | If violation_type is `"other"`, describe the violation |
 | `.claim_type` | enum | ○ | — | ○ | — | Claims only: `"theft"` `"vandalism"` `"glass_repair"` `"other"` |
 | `.claim_amount` | number | ○ | — | ○ | — | Dollar amount of the claim |
-| vehicles[] — Vehicle Array (1–6) | Lead Ping | Lead Post | Call Ping | Call Post |  |  |
+
+### vehicles[] — Vehicle Array (1–6)
+
+| Field | Type | Lead Ping | Lead Post | Call Ping | Call Post | Description |
+|-------|------|-----------|-----------|-----------|-----------|-------------|
 | `vehicles[]` | array | ✅ | — | ○ | — | Ping-only. All vehicle data is sent on the ping |
 | `.year` | number | ✅ | — | ✅ | — | Min 1900 |
 | `.make` | string | ✅ | — | ✅ | — | `"Toyota"` |
