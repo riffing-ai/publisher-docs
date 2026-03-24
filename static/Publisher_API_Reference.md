@@ -340,7 +340,7 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 | Field | Type | Lead Ping | Lead Post | Call Ping | Call Post | Description |
 |-------|------|-----------|-----------|-----------|-----------|-------------|
 | `trusted_form_url` | string (500) | — | ✅ | — | ○ | **Required for leads.** TrustedForm cert URL |
-| `tcpa_language` | string (2000) | ○ | ○ | ○ | ○ | TCPA consent text shown on the form |
+| `tcpa_language` | string (2000) | ○ | ○ | ○ | ○ | TCPA consent text shown on the form. Stored with the bid if sent on ping |
 | `tcpa_json` | string (5000) | — | ○ | — | ○ | Structured TCPA consent data (includes consumer IP, timestamp) |
 | `leadid_token` | string | — | ○ | — | ○ | Jornaya LeadiD token |
 
