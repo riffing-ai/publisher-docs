@@ -873,6 +873,7 @@ interface CallBidResponse {
   price: string; // USD, always 2 decimal places, e.g. "12.40"
   transfer_phone: string;
   minimum_call_duration: number;
+  warnings?: string[]; // e.g. ["Unknown field 'dui' was ignored"]
 }
 
 interface LeadBidResponse {
@@ -880,6 +881,7 @@ interface LeadBidResponse {
   bid_id: string;
   external_id: string;
   price: string; // USD, always 2 decimal places, e.g. "4.20"
+  warnings?: string[];
 }
 
 interface DeclineResponse {
@@ -960,12 +962,14 @@ interface CallAcceptedResponse {
   external_id: string;
   transfer_phone: string;
   minimum_call_duration: number;
+  warnings?: string[];
 }
 
 interface LeadAcceptedResponse {
   status: "accepted";
   bid_id: string;
   external_id: string;
+  warnings?: string[];
 }
 
 interface RejectedResponse {
