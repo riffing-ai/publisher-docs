@@ -427,7 +427,7 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 | `.government_employment_type` | enum | ○ | — | ○ | — | `"federal_employee"` `"city_state_employee"` |
 | `.student_type` | enum | ○ | — | ○ | — | `"high_school_student"` `"technical_vocational_student"` `"freshman_undergraduate"` `"sophomore_undergraduate"` `"junior_undergraduate"` `"senior_undergraduate"` `"graduate_student"` `"law_student"` `"medical_student"` |
 | `.military_affiliation` | enum | ○ | — | ○ | — | `"active_duty"` `"military_retiree"` `"veteran"` `"military_academy_cadet"` `"national_guard"` `"military_reserves"` |
-| `.sr_twenty_two` | boolean | ○ | — | ○ | — | Does this specific driver have an SR-22, FR-44, or similar filing? Use for per-driver detail when multiple drivers differ |
+| `.sr_twenty_two` | boolean | ○ | — | ○ | — | Per-driver SR-22 status. When provided, takes precedence over the top-level `sr_twenty_two` for this driver |
 | `.bankruptcy` | boolean | ○ | — | ○ | — | Has this driver filed for bankruptcy? |
 | `.incidents[]` | array (0–6) | ○ | — | ○ | — | Ping-only. Omit if none |
 
@@ -782,7 +782,7 @@ interface PingDriver {
   birth_date: string;
   marital_status: MaritalStatus;
   license_status: "active" | "suspended" | "revoked" | "expired" | "permit" | "no_license";
-  sr_twenty_two?: boolean; // Per-driver SR-22; overrides top-level if present
+  sr_twenty_two?: boolean; // Per-driver SR-22. When provided, takes precedence over top-level for this driver
   incidents?: PingIncident[]; // omit if none
 }
 
