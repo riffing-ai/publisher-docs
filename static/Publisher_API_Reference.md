@@ -93,12 +93,14 @@ curl -X POST https://api.autobind.ai/leads/post \
 
 ## How It Works
 
+> **Ping = bid parameters. Post = PII + compliance.** All demographic, insurance, driver, vehicle, and incident data is sent on the **ping** — these are the parameters we use to calculate your bid. The **post** contains only personally identifiable information (names, phones, email, address), driver identity, and compliance proof. Bid parameters sent on the ping are stored with the bid and used when we process the lead.
+
 ### Lead Flow
 
 1. Consumer submits a form on your site
 2. You **ping** us with the required fields (state, insured status, drivers, vehicles) plus any optional fields you have — more data improves bid accuracy
 3. We return a `bid_id` and `price`, or decline
-4. If you accept our bid, you **post** the consumer's PII (name, phone, email, address) and compliance proof (TrustedForm URL) along with the `bid_id`. Risk data from the ping is already stored with the bid
+4. If you accept our bid, you **post** the consumer's PII (name, phone, email, address) and compliance proof (TrustedForm URL) along with the `bid_id`. Bid parameters from the ping are already stored with the bid
 5. We accept or reject the post — use `GET /leads/status/{bid_id}` to check status later
 
 ### Call Flow
@@ -177,7 +179,7 @@ curl -X POST https://api.autobind.ai/leads/ping \
 
 ### Lead Ping — Request
 
-No PII required — only demographic and risk data for bidding. `drivers[0]` is always the policyholder. Each driver can include an `incidents` array.
+No PII required — only bid parameters (demographics, insurance, drivers, vehicles). `drivers[0]` is always the policyholder. Each driver can include an `incidents` array.
 
 ```bash
 curl -X POST https://api.autobind.ai/leads/ping \
@@ -315,7 +317,7 @@ Required for all lead posts. This is a [TrustedForm](https://activeprospect.com/
 
 All ping and post fields in one table. ✅ = required, ○ = optional, — = not applicable.
 
-> **Ping = risk data for bidding. Post = PII + compliance.** All demographic, insurance, driver risk, vehicle, and incident data is sent on the ping. The post contains only personally identifiable information (names, phones, email, address), driver identity (names, relationship, license number), and compliance proof. Risk data sent on the ping is stored with the bid and used when we process the lead.
+> See the key principle above: **ping = bid parameters, post = PII + compliance.**
 
 > **Call posts:** Only `media_type`, `bid_id`, and `dial_in_phone` are required. All other fields are optional — but including lead data improves conversion rates and the price we're willing to pay on future bids.
 
@@ -401,7 +403,7 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 
 | Field | Type | Lead Ping | Lead Post | Call Ping | Call Post | Description |
 |-------|------|-----------|-----------|-----------|-----------|-------------|
-| `drivers[]` | array | ✅ | ✅ | ○ | ○ | Ping: risk data. Post: PII only (names, relationship, license number) |
+| `drivers[]` | array | ✅ | ✅ | ○ | ○ | Ping: bid parameters. Post: PII only (names, relationship, license number) |
 | `.first_name` | string (100) | — | ✅ | — | ○ |  |
 | `.middle_name` | string (100) | — | ○ | — | ○ |  |
 | `.last_name` | string (100) | — | ✅ | — | ○ |  |
