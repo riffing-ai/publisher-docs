@@ -332,7 +332,7 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 | `external_id` | string (100) | ○ | ○ | ○ | ○ | Your ID — echoed in responses. Omitted from response if not provided |
 | `state_abbreviation` | string (2) | ✅ | — | ✅ | ○ | `"TX"` — 2 uppercase letters |
 | `zip` | string (5) | ✅ | — | ○ | ○ | 5 digits, e.g. `"75201"` |
-| `language` | `"en"` / `"es"` | ○ | ○ | ✅ | ○ | English / Spanish. Required for calls |
+| `language` | `"en"` / `"es"` | ○ | ○ | ✅ | ○ | `"en"` = English, `"es"` = Spanish. Required for calls |
 | `currently_insured` | boolean | ✅ | — | ✅ | — | Does the policyholder currently have an active auto insurance policy? |
 | `home_ownership` | boolean | ✅ | — | ○ | — | Does the policyholder own their home? |
 | `sr_twenty_two` | boolean | ✅ | — | ✅ | — | `true` if **any** driver in the household has an SR-22, FR-44, or similar filing. For per-driver detail, use `.sr_twenty_two` on each driver |
