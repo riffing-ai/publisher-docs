@@ -1,12 +1,4 @@
----
-sidebar_position: 1
-title: API Reference
-slug: /
----
-
 # Autobind Lead & Call Acquisition API
-
-<a href="/Publisher_API_Reference.md" download style={{fontSize: '14px'}}>Download as Markdown</a> — for AI-assisted integration (Claude, Cursor, etc.)
 
 ## Overview
 
