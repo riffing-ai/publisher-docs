@@ -25,6 +25,7 @@ curl -X POST https://api.autobind.ai/leads/ping \
   -H "Content-Type: application/json" \
   -d '{
     "media_type": "lead",
+    "campaign_name": "google-auto-full-form",
     "ip_address": "73.162.100.50",
     "user_agent": "Mozilla/5.0 Chrome/120.0.0.0",
     "media_source": "Google",
@@ -185,6 +186,7 @@ curl -X POST https://api.autobind.ai/leads/ping \
   -d '{
     "media_type": "lead",
     "external_id": "your-unique-id-456",
+    "campaign_name": "google-auto-full-form",
     "ip_address": "73.162.100.50",
     "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0",
     "media_source": "Google",
@@ -476,6 +478,7 @@ Full realistic payloads showing all nesting. `drivers[0]` is always the policyho
 {
   "media_type": "lead",
   "external_id": "pub-2026-03-23-001",
+  "campaign_name": "google-auto-full-form",
   "ip_address": "73.162.100.50",
   "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0",
   "media_source": "Google",
