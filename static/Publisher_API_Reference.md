@@ -881,7 +881,7 @@ interface LeadBidResponse {
 
 interface DeclineResponse {
   status: "decline";
-  reason: string;
+  reason: "no_bid";
   external_id?: string;
   message?: string; // Human-readable explanation, suitable for logging. Do not display to end users — text may change.
 }
