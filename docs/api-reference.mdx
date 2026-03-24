@@ -40,8 +40,8 @@ curl -X POST https://api.autobind.ai/leads/ping \
     "zip": "75201",
     "currently_insured": true,
     "home_ownership": false,
-    "drivers": [{ "gender": "male", "birth_date": "1990-06-15", "marital_status": "married", "license_status": "active", "sr_twenty_two": false, "dui": false }],
-    "vehicles": [{ "year": 2021, "make": "Toyota", "model": "Camry", "primary_purpose": false }]
+    "drivers": [{ "gender": "male", "birth_date": "1990-06-15", "marital_status": "married", "license_status": "active", "sr_twenty_two": false }],
+    "vehicles": [{ "year": 2021, "make": "Toyota", "model": "Camry", "commercial_use": false }]
   }'
 # → { "status": "bid", "bid_id": "...", "price": "4.20" }
 
@@ -64,7 +64,7 @@ curl -X POST https://api.autobind.ai/leads/post \
     "state_abbreviation": "TX", "zip": "75201",
     "currently_insured": true, "home_ownership": false,
     "drivers": [{ "first_name": "John", "last_name": "Doe", "gender": "male", "birth_date": "1990-06-15", "marital_status": "married", "relationship_to_policyholder": "self", "license_status": "active", "sr_twenty_two": false }],
-    "vehicles": [{ "year": 2021, "make": "Toyota", "model": "Camry", "primary_purpose": false }]
+    "vehicles": [{ "year": 2021, "make": "Toyota", "model": "Camry", "commercial_use": false }]
   }'
 # → { "status": "accepted", "bid_id": "..." }
 ```
@@ -211,12 +211,10 @@ curl -X POST https://api.autobind.ai/leads/ping \
         "marital_status": "married",
         "license_status": "active",
         "sr_twenty_two": false,
-        "dui": false,
         "incidents": [
           {
             "type": "violation",
-            "violation_type": "other",
-            "violation_type_other": "Running a red light"
+            "violation_type": "driving_under_the_influence"
           }
         ]
       },
@@ -226,7 +224,6 @@ curl -X POST https://api.autobind.ai/leads/ping \
         "marital_status": "married",
         "license_status": "active",
         "sr_twenty_two": false,
-        "dui": false,
         "incidents": [
           {
             "type": "accident",
@@ -238,8 +235,8 @@ curl -X POST https://api.autobind.ai/leads/ping \
       }
     ],
     "vehicles": [
-      { "year": 2021, "make": "Toyota", "model": "Camry", "primary_purpose": false },
-      { "year": 2023, "make": "Honda", "model": "CR-V", "primary_purpose": false }
+      { "year": 2021, "make": "Toyota", "model": "Camry", "commercial_use": false },
+      { "year": 2023, "make": "Honda", "model": "CR-V", "commercial_use": false }
     ]
   }'
 ```
@@ -345,7 +342,7 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 <tr style={{background: "#1a1a2e", color: "white"}}><td colSpan="2" style={{fontWeight: "bold", padding: "6px 12px"}}>Core Fields</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Lead<br/>Ping</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Lead<br/>Post</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Call<br/>Ping</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Call<br/>Post</td><td></td></tr>
 <tr><td><code>media_type</code></td><td><code>"lead"</code> / <code>"call"</code></td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td></td></tr>
 <tr><td><code>bid_id</code></td><td>UUID</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td>From ping response</td></tr>
-<tr><td><code>external_id</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td>Your ID — echoed in responses</td></tr>
+<tr><td><code>external_id</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td>Your ID — echoed in responses. Omitted from response if not provided</td></tr>
 <tr><td><code>state_abbreviation</code></td><td>string (2)</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td><code>"TX"</code> — 2 uppercase letters</td></tr>
 <tr><td><code>currently_insured</code></td><td>boolean</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td>Does the policyholder currently have an active auto insurance policy?</td></tr>
 <tr><td><code>zip</code></td><td>string (5)</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td>5 digits, e.g. <code>"75201"</code></td></tr>
@@ -408,7 +405,6 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 <tr><td><code>.marital_status</code></td><td>enum</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td><code>"single"</code> <code>"married"</code> <code>"divorced"</code> <code>"separated"</code> <code>"widowed"</code> <code>"domestic_partnership"</code> <code>"civil_union"</code></td></tr>
 <tr><td><code>.license_status</code></td><td>enum</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td><code>"active"</code> <code>"suspended"</code> <code>"expired"</code> <code>"permit"</code> <code>"no_license"</code></td></tr>
 <tr><td><code>.sr_twenty_two</code></td><td>boolean</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td>Is the driver required to carry an SR-22 or SR-1P filing? Default <code>false</code> if not collected</td></tr>
-<tr><td><code>.dui</code></td><td>boolean</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Has this driver had a DUI/DWI in the past 5 years? Ping only. Default <code>false</code> if not collected</td></tr>
 <tr><td><code>.first_name</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
 <tr><td><code>.middle_name</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
 <tr><td><code>.last_name</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
@@ -448,7 +444,7 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 <tr><td><code>.year</code></td><td>number</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td>Min 1900</td></tr>
 <tr><td><code>.make</code></td><td>string</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td><code>"Toyota"</code></td></tr>
 <tr><td><code>.model</code></td><td>string</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td><code>"Camry"</code></td></tr>
-<tr><td><code>.primary_purpose</code></td><td>boolean</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td><code>false</code> = personal, <code>true</code> = commercial. Default <code>false</code></td></tr>
+<tr><td><code>.commercial_use</code></td><td>boolean</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td>Is this vehicle used for commercial/business purposes? Default <code>false</code></td></tr>
 <tr><td><code>.trim</code></td><td>string</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td>e.g. <code>"LE"</code>, <code>"SE"</code></td></tr>
 <tr><td><code>.vin</code></td><td>string (17)</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td>Exactly 17 characters</td></tr>
 <tr><td><code>.ownership</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td><code>"fully_paid"</code> <code>"financed"</code> <code>"leased"</code></td></tr>
@@ -500,13 +496,11 @@ Full realistic payloads showing all nesting. `drivers[0]` is always the policyho
       "marital_status": "married",
       "license_status": "active",
       "sr_twenty_two": false,
-      "dui": false,
       "incidents": [
         {
           "type": "violation",
           "incident_date": "2025-01-10",
-          "violation_type": "other",
-          "violation_type_other": "Running a red light"
+          "violation_type": "driving_under_the_influence"
         }
       ]
     },
@@ -516,7 +510,6 @@ Full realistic payloads showing all nesting. `drivers[0]` is always the policyho
       "marital_status": "married",
       "license_status": "active",
       "sr_twenty_two": false,
-      "dui": false,
       "incidents": [
         {
           "type": "accident",
@@ -528,8 +521,8 @@ Full realistic payloads showing all nesting. `drivers[0]` is always the policyho
     }
   ],
   "vehicles": [
-    { "year": 2021, "make": "Toyota", "model": "Camry", "primary_purpose": false },
-    { "year": 2023, "make": "Honda", "model": "CR-V", "primary_purpose": false }
+    { "year": 2021, "make": "Toyota", "model": "Camry", "commercial_use": false },
+    { "year": 2023, "make": "Honda", "model": "CR-V", "commercial_use": false }
   ]
 }
 ```
@@ -609,7 +602,7 @@ Full realistic payloads showing all nesting. `drivers[0]` is always the policyho
       "make": "Toyota",
       "model": "Camry",
       "vin": "4T1BF1FK5MU123456",
-      "primary_purpose": false,
+      "commercial_use": false,
       "ownership": "financed",
       "annual_mileage": 12000,
       "license_plate_state": "TX"
@@ -619,7 +612,7 @@ Full realistic payloads showing all nesting. `drivers[0]` is always the policyho
       "make": "Honda",
       "model": "CR-V",
       "vin": "2HKRW2H57MH654321",
-      "primary_purpose": false,
+      "commercial_use": false,
       "ownership": "leased",
       "annual_mileage": 8000,
       "license_plate_state": "TX"
@@ -692,8 +685,8 @@ Single error:
 ```json
 {
   "status": "error",
-  "error": "'external_id' is required",
-  "errors": ["'external_id' is required"]
+  "error": "'state_abbreviation' is required",
+  "errors": ["'state_abbreviation' is required"]
 }
 ```
 
@@ -795,7 +788,7 @@ If provided, exactly 17 characters.
 ### Critical rules
 - `drivers[0].relationship_to_policyholder` must be `"self"` on lead posts
 - `trusted_form_url` (TrustedForm by ActiveProspect) is **required** on lead posts
-- Lead posts use `.strict()` — unknown fields are rejected
+- Unknown fields are silently stripped and returned as `warnings` in the response (not rejected)
 
 ---
 
@@ -853,17 +846,17 @@ interface PingVehicle {
   year: number;
   make: string;
   model: string;
-  primary_purpose?: boolean;
+  commercial_use?: boolean;
 }
 
-// Lead ping driver/vehicle — dui and primary_purpose are required
+// Lead ping driver/vehicle — dui and commercial_use are required
 interface LeadPingDriver extends PingDriver {
   dui: boolean;
   incidents?: PingIncident[]; // omit if none
 }
 
 interface LeadPingVehicle extends PingVehicle {
-  primary_purpose: boolean;
+  commercial_use: boolean;
 }
 
 interface CallPingRequest {
@@ -1045,7 +1038,7 @@ interface LeadPostVehicle {
   trim?: string;
   vin?: string;
   ownership?: "fully_paid" | "financed" | "leased";
-  primary_purpose: boolean; // required for lead posts, optional for call posts
+  commercial_use: boolean; // required for lead posts, optional for call posts
   type_of_business_use?: BusinessUseType;
   primary_driver?: boolean;
   annual_mileage?: number;
