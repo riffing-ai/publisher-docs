@@ -869,7 +869,7 @@ type PingRequest = CallPingRequest | LeadPingRequest;
 interface CallBidResponse {
   status: "bid";
   bid_id: string;
-  external_id: string;
+  external_id?: string;
   price: string; // USD, always 2 decimal places, e.g. "12.40"
   transfer_phone: string;
   minimum_call_duration: number;
@@ -879,7 +879,7 @@ interface CallBidResponse {
 interface LeadBidResponse {
   status: "bid";
   bid_id: string;
-  external_id: string;
+  external_id?: string;
   price: string; // USD, always 2 decimal places, e.g. "4.20"
   warnings?: string[];
 }
@@ -959,7 +959,7 @@ type PostRequest = CallPostRequest | LeadPostRequest;
 interface CallAcceptedResponse {
   status: "accepted";
   bid_id: string;
-  external_id: string;
+  external_id?: string;
   transfer_phone: string;
   minimum_call_duration: number;
   warnings?: string[];
@@ -968,7 +968,7 @@ interface CallAcceptedResponse {
 interface LeadAcceptedResponse {
   status: "accepted";
   bid_id: string;
-  external_id: string;
+  external_id?: string;
   warnings?: string[];
 }
 
@@ -983,7 +983,7 @@ type PostResponse = CallAcceptedResponse | LeadAcceptedResponse | RejectedRespon
 
 interface LeadStatusResponse {
   bid_id: string;
-  external_id: string;
+  external_id?: string;
   status: "accepted" | "rejected";
   billable: boolean;
   created_at: string;
@@ -991,7 +991,7 @@ interface LeadStatusResponse {
 
 interface CallStatusResponse {
   bid_id: string;
-  external_id: string;
+  external_id?: string;
   status: "accepted" | "rejected";
   billable: boolean;
   call_duration: number | null;
