@@ -624,7 +624,6 @@ Single error:
 ```json
 {
   "status": "error",
-  "error": "'state_abbreviation' is required",
   "errors": ["'state_abbreviation' is required"]
 }
 ```
@@ -634,7 +633,6 @@ Multiple errors:
 ```json
 {
   "status": "error",
-  "error": "Multiple validation errors",
   "errors": [
     "'state_abbreviation' is required",
     "Must be exactly 10 digits, numeric only at 'contact_phone'",
@@ -648,7 +646,7 @@ Multiple errors:
 ```json
 {
   "status": "error",
-  "error": "Invalid or missing API key"
+  "errors": ["Invalid or missing API key"]
 }
 ```
 
@@ -993,8 +991,7 @@ interface CallStatusResponse {
 
 interface ErrorResponse {
   status: "error";
-  error: string;
-  errors?: string[]; // Detailed per-field validation messages
+  errors: string[]; // Always an array, even for single errors
 }
 
 // ── Enums ──
