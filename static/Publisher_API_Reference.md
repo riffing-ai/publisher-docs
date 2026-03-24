@@ -4,7 +4,7 @@
 
 ## Overview
 
-JSON API for submitting auto insurance leads and call transfers via ping-post. You ping with partial consumer data to get a bid, then post the full data if you accept our price.
+JSON API for submitting auto insurance leads and call transfers via ping-post. You ping with bid parameters (demographics, drivers, vehicles) to get a price, then post the consumer's PII and compliance proof if you accept our bid.
 
 **Two media types:**
 - **`lead`** — Form-submitted consumer data. We buy the data.
