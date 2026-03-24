@@ -409,7 +409,7 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 | `.middle_name` | string (100) | — | ○ | — | ○ |  |
 | `.last_name` | string (100) | — | ✅ | — | ○ |  |
 | `.relationship_to_policyholder` | enum | ○ | ✅ | ○ | ○ | `"self"` `"spouse"` `"child"` `"parent"` `"sibling"` `"other"` — `"self"` must always be `drivers[0]` |
-| `.birth_date` | string | ○ | — | ○ | — | `YYYY-MM-DD`. Provide `birth_date` or `age` (at least one) |
+| `.birth_date` | string | ○ | ○ | ○ | ○ | `YYYY-MM-DD`. Ping: provide `birth_date` or `age` (at least one). Post: include if available — improves quoting accuracy |
 | `.age` | number (15–99) | ○ | — | ○ | — | Driver's age in years. Use instead of `birth_date` if PII is a concern on pings |
 | `.gender` | enum | ✅ | — | ✅ | — | `"male"` `"female"` |
 | `.marital_status` | enum | ✅ | — | ✅ | — | `"single"` `"married"` `"divorced"` `"separated"` `"widowed"` `"domestic_partnership"` `"civil_union"` |
@@ -927,6 +927,7 @@ interface LeadPostDriver {
   last_name: string;
   relationship_to_policyholder: "self" | "spouse" | "child" | "parent" | "sibling" | "other";
   license_number?: string;
+  birth_date?: string; // Include if available — improves quoting accuracy
 }
 
 interface LeadPostRequest {
