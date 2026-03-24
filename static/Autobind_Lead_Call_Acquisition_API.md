@@ -49,7 +49,7 @@ curl -X POST https://api.autobind.ai/leads/post \
   -d '{
     "media_type": "lead",
     "bid_id": "BID_ID_FROM_PING",
-    "trusted_form_url": "https://cert.trustedform.com/abc123",
+    "trusted_form_cert_url": "https://cert.trustedform.com/abc123",
     "first_name": "John", "last_name": "Doe",
     "contact_phone": "2145559012", "email": "john@example.com",
     "street_address": "123 Main St", "city": "Dallas",
@@ -304,14 +304,14 @@ Transfer the consumer to `transfer_phone`. The call must last at least `minimum_
 | `invalid_bid` | bid_id not found, wrong partner, or media type mismatch |
 | `bid_expired` | Bid has expired (leads: 90s, calls: 60s) |
 | `duplicate_phone` | Phone number seen in last 30 days |
-| `missing_consent_proof` | `trusted_form_url` is missing (leads only) |
+| `missing_consent_proof` | `trusted_form_cert_url` is missing (leads only) |
 | `failed_secondary_evaluation` | Lead data failed our evaluation (leads only) |
 
-### `trusted_form_url`
+### `trusted_form_cert_url`
 
 Required for all leads — can be sent on either the **ping** or the **post**. This is a [TrustedForm](https://activeprospect.com/trustedform/) certificate URL from ActiveProspect that proves the consumer consented on your form. Leads without it on either request are rejected with `"missing_consent_proof"`.
 
-We encourage sending `trusted_form_url` (and all compliance fields) on the **ping**. The TrustedForm certificate is generated at form fill time, before you have PII — so it's available when you ping. Sending it early means your post only needs `bid_id`, PII, and driver identity.
+We encourage sending `trusted_form_cert_url` (and all compliance fields) on the **ping**. The TrustedForm certificate is generated at form fill time, before you have PII — so it's available when you ping. Sending it early means your post only needs `bid_id`, PII, and driver identity.
 
 ---
 ## Field Reference
@@ -342,7 +342,7 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 
 | Field | Type | Lead Ping | Lead Post | Call Ping | Call Post | Description |
 |-------|------|-----------|-----------|-----------|-----------|-------------|
-| `trusted_form_url` | string (500) | ○ | ✅ | ○ | ○ | **Required for leads** (on ping or post). TrustedForm cert URL. We encourage sending this on the ping — the certificate is generated at form fill time, so it's available before PII |
+| `trusted_form_cert_url` | string (500) | ○ | ✅ | ○ | ○ | **Required for leads** (on ping or post). TrustedForm cert URL. We encourage sending this on the ping — the certificate is generated at form fill time, so it's available before PII |
 | `tcpa_language` | string (2000) | ○ | ○ | ○ | ○ | TCPA consent text shown on the form. We encourage sending this on the ping |
 | `tcpa_json` | string (5000) | ○ | ○ | ○ | ○ | Structured TCPA consent data (includes consumer IP, timestamp). We encourage sending this on the ping |
 | `leadid_token` | string | ○ | ○ | ○ | ○ | Jornaya LeadiD token. We encourage sending this on the ping |
@@ -538,7 +538,7 @@ Full realistic payloads showing all nesting. `drivers[0]` is always the policyho
 {
   "media_type": "lead",
   "bid_id": "BID_ID_FROM_PING",
-  "trusted_form_url": "https://cert.trustedform.com/abc123def456",
+  "trusted_form_cert_url": "https://cert.trustedform.com/abc123def456",
   "first_name": "John",
   "last_name": "Doe",
   "contact_phone": "2145559012",
@@ -732,7 +732,7 @@ If provided, exactly 17 characters.
 
 ### Critical rules
 - `drivers[0].relationship_to_policyholder` must be `"self"` on lead posts
-- `trusted_form_url` (TrustedForm by ActiveProspect) is **required** on lead posts
+- `trusted_form_cert_url` (TrustedForm by ActiveProspect) is **required** on lead posts
 - Unknown fields are silently stripped and returned as `warnings` in the response (not rejected)
 
 ---
@@ -903,7 +903,7 @@ interface CallPostRequest {
   bid_id: string;
   dial_in_phone: string; // 10 digits
   language?: Language;
-  trusted_form_url?: string;
+  trusted_form_cert_url?: string;
   tcpa_language?: string;
   tcpa_json?: string;
   leadid_token?: string;
@@ -935,7 +935,7 @@ interface LeadPostDriver {
 interface LeadPostRequest {
   media_type: "lead";
   bid_id: string;
-  trusted_form_url: string; // REQUIRED — TrustedForm by ActiveProspect
+  trusted_form_cert_url: string; // REQUIRED — TrustedForm by ActiveProspect
   tcpa_language?: string;
   tcpa_json?: string;
   leadid_token?: string;
