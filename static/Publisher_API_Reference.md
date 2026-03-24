@@ -1010,7 +1010,7 @@ type EmploymentStatus = "company" | "self" | "military" | "government" | "retire
 type Industry = "financial" | "agriculture" | "arts" | "assistants" | "automotive" | "cleaning" | "computers" | "construction" | "counseling" | "education" | "engineering" | "executives" | "health" | "law" | "operators" | "postal" | "maintenance" | "service" | "food" | "sales" | "science" | "travel";
 type StudentType = "high_school_student" | "technical_vocational_student" | "freshman_undergraduate" | "sophomore_undergraduate" | "junior_undergraduate" | "senior_undergraduate" | "graduate_student" | "law_student" | "medical_student";
 type MilitaryAffiliation = "active_duty" | "military_retiree" | "veteran" | "military_academy_cadet" | "national_guard" | "military_reserves";
-type BusinessUseType =
+type CommercialUseType =
   // Delivery
   | "courier_service" | "delivery_fast_food" | "delivery_retail_wholesale"
   | "delivery_route" | "delivery_us_mail" | "delivery_and_sales"
