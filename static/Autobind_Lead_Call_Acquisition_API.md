@@ -69,7 +69,6 @@ curl -X POST https://api.autobind.ai/leads/ping \
     "media_type": "call",
     "external_id": "your-unique-id-123",
     "state_abbreviation": "TX",
-    "sr_twenty_two": false,
     "currently_insured": true,
     "language": "en"
   }'
@@ -155,7 +154,6 @@ curl -X POST https://api.autobind.ai/leads/ping \
     "external_id": "your-unique-id-123",
     "state_abbreviation": "TX",
     "currently_insured": true,
-    "sr_twenty_two": false,
     "language": "en"
   }'
 ```
@@ -335,7 +333,7 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 | `language` | `"en"` / `"es"` | ○ | ○ | ✅ | ○ | `"en"` = English, `"es"` = Spanish. Required for calls |
 | `currently_insured` | boolean | ✅ | — | ✅ | — | Does the policyholder currently have an active auto insurance policy? |
 | `home_ownership` | boolean | ✅ | — | ○ | — | Does the policyholder own their home? |
-| `sr_twenty_two` | boolean | ✅ | — | ✅ | — | `true` if **any** driver in the household has an SR-22, FR-44, or similar filing. For per-driver detail, use `.sr_twenty_two` on each driver |
+| `sr_twenty_two` | boolean | ✅ | — | ○ | — | `true` if **any** driver in the household has an SR-22, FR-44, or similar filing. For per-driver detail, use `.sr_twenty_two` on each driver |
 | `dial_in_phone` | string (10 digits) | — | — | — | ✅ | Calls only. The caller ID we use to match the incoming call to your bid |
 
 ### Compliance & Consent
@@ -409,7 +407,7 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 | `.middle_name` | string (100) | — | ○ | — | ○ |  |
 | `.last_name` | string (100) | — | ✅ | — | ○ |  |
 | `.relationship_to_policyholder` | enum | ○ | ✅ | ○ | ○ | `"self"` `"spouse"` `"child"` `"parent"` `"sibling"` `"other"` — `"self"` must always be `drivers[0]` |
-| `.birth_date` | string | ○ | ○ | ○ | ○ | `YYYY-MM-DD`. Ping: provide `birth_date` or `age` (at least one). Post: include if available — improves quoting accuracy |
+| `.birth_date` | string | ○ | ○ | ○ | ○ | `YYYY-MM-DD`. Ping: provide `birth_date` or `age` (at least one). Post: include if available — improves conversion, and ultimately pricing |
 | `.age` | number (15–99) | ○ | — | ○ | — | Driver's age in years. Use instead of `birth_date` if PII is a concern on pings |
 | `.gender` | enum | ✅ | — | ✅ | — | `"male"` `"female"` |
 | `.marital_status` | enum | ✅ | — | ✅ | — | `"single"` `"married"` `"divorced"` `"separated"` `"widowed"` `"domestic_partnership"` `"civil_union"` |
@@ -931,7 +929,7 @@ interface LeadPostDriver {
   last_name: string;
   relationship_to_policyholder: "self" | "spouse" | "child" | "parent" | "sibling" | "other";
   license_number?: string;
-  birth_date?: string; // Include if available — improves quoting accuracy
+  birth_date?: string; // Include if available — improves conversion, and ultimately pricing
 }
 
 interface LeadPostRequest {

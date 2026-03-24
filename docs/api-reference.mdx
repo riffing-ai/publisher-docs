@@ -77,7 +77,6 @@ curl -X POST https://api.autobind.ai/leads/ping \
     "media_type": "call",
     "external_id": "your-unique-id-123",
     "state_abbreviation": "TX",
-    "sr_twenty_two": false,
     "currently_insured": true,
     "language": "en"
   }'
@@ -163,7 +162,6 @@ curl -X POST https://api.autobind.ai/leads/ping \
     "external_id": "your-unique-id-123",
     "state_abbreviation": "TX",
     "currently_insured": true,
-    "sr_twenty_two": false,
     "language": "en"
   }'
 ```
@@ -358,7 +356,7 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 <tr><td><code>language</code></td><td><code>"en"</code> / <code>"es"</code></td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td><code>"en"</code> = English, <code>"es"</code> = Spanish. Required for calls</td></tr>
 <tr><td><code>currently_insured</code></td><td>boolean</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td>Does the policyholder currently have an active auto insurance policy?</td></tr>
 <tr><td><code>home_ownership</code></td><td>boolean</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Does the policyholder own their home?</td></tr>
-<tr><td><code>sr_twenty_two</code></td><td>boolean</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td><code>true</code> if <strong>any</strong> driver in the household has an SR-22, FR-44, or similar filing. For per-driver detail, use <code>.sr_twenty_two</code> on each driver</td></tr>
+<tr><td><code>sr_twenty_two</code></td><td>boolean</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>true</code> if <strong>any</strong> driver in the household has an SR-22, FR-44, or similar filing. For per-driver detail, use <code>.sr_twenty_two</code> on each driver</td></tr>
 <tr><td><code>dial_in_phone</code></td><td>string (10 digits)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td>Calls only. The caller ID we use to match the incoming call to your bid</td></tr>
 
 <tr style={{background: "#1a1a2e", color: "white"}}><td colSpan="2" style={{fontWeight: "bold", padding: "6px 12px"}}>Compliance &amp; Consent</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Lead<br/>Ping</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Lead<br/>Post</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Call<br/>Ping</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Call<br/>Post</td><td></td></tr>
@@ -414,7 +412,7 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 <tr><td><code>.middle_name</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
 <tr><td><code>.last_name</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td></td></tr>
 <tr><td><code>.relationship_to_policyholder</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td><code>"self"</code> <code>"spouse"</code> <code>"child"</code> <code>"parent"</code> <code>"sibling"</code> <code>"other"</code> — <code>"self"</code> must always be <code>drivers[0]</code></td></tr>
-<tr><td><code>.birth_date</code></td><td>string</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td><code>YYYY-MM-DD</code>. Ping: provide <code>birth_date</code> or <code>age</code> (at least one). Post: include if available — improves quoting accuracy</td></tr>
+<tr><td><code>.birth_date</code></td><td>string</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>○</td><td><code>YYYY-MM-DD</code>. Ping: provide <code>birth_date</code> or <code>age</code> (at least one). Post: include if available — improves conversion, and ultimately pricing</td></tr>
 <tr><td><code>.age</code></td><td>number (15–99)</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Driver's age in years. Use instead of <code>birth_date</code> if PII is a concern on pings</td></tr>
 <tr><td><code>.gender</code></td><td>enum</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td><code>"male"</code> <code>"female"</code></td></tr>
 <tr><td><code>.marital_status</code></td><td>enum</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td><code>"single"</code> <code>"married"</code> <code>"divorced"</code> <code>"separated"</code> <code>"widowed"</code> <code>"domestic_partnership"</code> <code>"civil_union"</code></td></tr>
@@ -934,7 +932,7 @@ interface LeadPostDriver {
   last_name: string;
   relationship_to_policyholder: "self" | "spouse" | "child" | "parent" | "sibling" | "other";
   license_number?: string;
-  birth_date?: string; // Include if available — improves quoting accuracy
+  birth_date?: string; // Include if available — improves conversion, and ultimately pricing
 }
 
 interface LeadPostRequest {
