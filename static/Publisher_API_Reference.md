@@ -86,7 +86,8 @@ curl -X POST https://api.autobind.ai/leads/post \
     "dial_in_phone": "2145559688"
   }'
 # → { "status": "accepted", "bid_id": "...", "transfer_phone": "8773119191", "minimum_call_duration": 90 }
-# Transfer the consumer to transfer_phone. Call must last minimum_call_duration seconds.
+# Transfer the consumer to transfer_phone (8773119191).
+# Call must last at least minimum_call_duration (90) seconds to qualify for payment.
 ```
 
 ---
