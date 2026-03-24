@@ -797,9 +797,8 @@ interface PingVehicle {
   commercial_use?: boolean;
 }
 
-// Lead ping driver/vehicle — dui and commercial_use are required
+// Lead ping driver/vehicle — commercial_use is required
 interface LeadPingDriver extends PingDriver {
-  dui: boolean;
   incidents?: PingIncident[]; // omit if none
 }
 
