@@ -183,7 +183,7 @@ curl -X POST https://api.autobind.ai/leads/ping \
 
 ### Lead Ping — Request
 
-No PII required — only demographic and risk data for bidding.
+No PII required — only demographic and risk data for bidding. `drivers[0]` is always the policyholder. Each driver can include an `incidents` array.
 
 ```bash
 curl -X POST https://api.autobind.ai/leads/ping \
@@ -209,11 +209,35 @@ curl -X POST https://api.autobind.ai/leads/ping \
         "marital_status": "married",
         "license_status": "active",
         "sr_twenty_two": false,
-        "dui": false
+        "dui": false,
+        "incidents": [
+          {
+            "type": "violation",
+            "violation_type": "other",
+            "violation_type_other": "Running a red light"
+          }
+        ]
+      },
+      {
+        "gender": "female",
+        "birth_date": "1992-04-28",
+        "marital_status": "married",
+        "license_status": "active",
+        "sr_twenty_two": false,
+        "dui": false,
+        "incidents": [
+          {
+            "type": "accident",
+            "incident_date": "2025-06-15",
+            "fault_status": "majority_at_fault",
+            "damage_type": "property_and_bodily_injury"
+          }
+        ]
       }
     ],
     "vehicles": [
-      { "year": 2021, "make": "Toyota", "model": "Camry", "primary_purpose": false }
+      { "year": 2021, "make": "Toyota", "model": "Camry", "primary_purpose": false },
+      { "year": 2023, "make": "Honda", "model": "CR-V", "primary_purpose": false }
     ]
   }'
 ```
@@ -455,6 +479,182 @@ Each incident has a `type` that determines which additional fields apply. All ad
 - `claim_amount`: dollar amount of the claim (we use this to assess risk)
 
 > **Note:** Only `type` is required. All other fields are optional — include what you have. `incident_date` (`YYYY-MM-DD`) is helpful but not required. Omit the `incidents` field entirely if the driver has no incidents.
+
+---
+
+## Detailed Examples
+
+Full realistic payloads showing all nesting. `drivers[0]` is always the policyholder.
+
+### Lead Ping — 2 drivers, 2 vehicles, with incidents
+
+```json
+{
+  "media_type": "lead",
+  "external_id": "pub-2026-03-23-001",
+  "ip_address": "73.162.100.50",
+  "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0",
+  "media_source": "Google",
+  "landing_page": "https://example.com/auto-insurance-quote",
+  "lead_created_at": "2026-03-23T14:30:00Z",
+  "state_abbreviation": "TX",
+  "zip": "75201",
+  "currently_insured": true,
+  "home_ownership": false,
+  "credit_status": "average",
+  "drivers": [
+    {
+      "gender": "male",
+      "birth_date": "1985-06-15",
+      "marital_status": "married",
+      "license_status": "active",
+      "sr_twenty_two": false,
+      "dui": false,
+      "incidents": [
+        {
+          "type": "violation",
+          "incident_date": "2025-01-10",
+          "violation_type": "other",
+          "violation_type_other": "Running a red light"
+        }
+      ]
+    },
+    {
+      "gender": "female",
+      "birth_date": "1987-04-28",
+      "marital_status": "married",
+      "license_status": "active",
+      "sr_twenty_two": false,
+      "dui": false,
+      "incidents": [
+        {
+          "type": "accident",
+          "incident_date": "2025-06-15",
+          "fault_status": "majority_at_fault",
+          "damage_type": "property_and_bodily_injury"
+        }
+      ]
+    }
+  ],
+  "vehicles": [
+    { "year": 2021, "make": "Toyota", "model": "Camry", "primary_purpose": false },
+    { "year": 2023, "make": "Honda", "model": "CR-V", "primary_purpose": false }
+  ]
+}
+```
+
+### Lead Post — full PII for the same household
+
+```json
+{
+  "media_type": "lead",
+  "bid_id": "BID_ID_FROM_PING",
+  "ip_address": "73.162.100.50",
+  "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0",
+  "media_source": "Google",
+  "landing_page": "https://example.com/auto-insurance-quote",
+  "lead_created_at": "2026-03-23T14:30:00Z",
+  "trusted_form_url": "https://cert.trustedform.com/abc123def456",
+  "first_name": "John",
+  "last_name": "Doe",
+  "contact_phone": "2145559012",
+  "email": "john.doe@example.com",
+  "street_address": "123 Main St",
+  "city": "Dallas",
+  "state_abbreviation": "TX",
+  "zip": "75201",
+  "currently_insured": true,
+  "home_ownership": false,
+  "credit_status": "average",
+  "residence_type": "single_family_home",
+  "insured_last_five_years": true,
+  "current_company": "Progressive",
+  "coverage_type": "basic",
+  "drivers": [
+    {
+      "first_name": "John",
+      "last_name": "Doe",
+      "gender": "male",
+      "birth_date": "1985-06-15",
+      "marital_status": "married",
+      "relationship_to_policyholder": "self",
+      "license_status": "active",
+      "license_state_or_country": "TX",
+      "license_number": "12345678",
+      "sr_twenty_two": false,
+      "incidents": [
+        {
+          "type": "violation",
+          "incident_date": "2025-01-10",
+          "violation_type": "other",
+          "violation_type_other": "Running a red light"
+        }
+      ]
+    },
+    {
+      "first_name": "Jane",
+      "last_name": "Doe",
+      "gender": "female",
+      "birth_date": "1987-04-28",
+      "marital_status": "married",
+      "relationship_to_policyholder": "spouse",
+      "license_status": "active",
+      "license_state_or_country": "TX",
+      "license_number": "87654321",
+      "sr_twenty_two": false,
+      "incidents": [
+        {
+          "type": "accident",
+          "incident_date": "2025-06-15",
+          "fault_status": "majority_at_fault",
+          "damage_type": "property_and_bodily_injury"
+        }
+      ]
+    }
+  ],
+  "vehicles": [
+    {
+      "year": 2021,
+      "make": "Toyota",
+      "model": "Camry",
+      "vin": "4T1BF1FK5MU123456",
+      "primary_purpose": false,
+      "ownership": "financed",
+      "annual_mileage": 12000,
+      "license_plate_state": "TX"
+    },
+    {
+      "year": 2023,
+      "make": "Honda",
+      "model": "CR-V",
+      "vin": "2HKRW2H57MH654321",
+      "primary_purpose": false,
+      "ownership": "leased",
+      "annual_mileage": 8000,
+      "license_plate_state": "TX"
+    }
+  ]
+}
+```
+
+### Call Post — with optional lead data
+
+```json
+{
+  "media_type": "call",
+  "bid_id": "BID_ID_FROM_PING",
+  "dial_in_phone": "2145559688",
+  "first_name": "John",
+  "last_name": "Doe",
+  "contact_phone": "2145559688",
+  "email": "john.doe@example.com",
+  "street_address": "123 Main St",
+  "city": "Dallas",
+  "state_abbreviation": "TX",
+  "zip": "75201",
+  "currently_insured": true
+}
+```
 
 ---
 
