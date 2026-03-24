@@ -409,7 +409,8 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 | `.middle_name` | string (100) | — | ○ | — | ○ |  |
 | `.last_name` | string (100) | — | ✅ | — | ○ |  |
 | `.relationship_to_policyholder` | enum | ○ | ✅ | ○ | ○ | `"self"` `"spouse"` `"child"` `"parent"` `"sibling"` `"other"` — `"self"` must always be `drivers[0]` |
-| `.birth_date` | string | ✅ | — | ✅ | — | `YYYY-MM-DD` |
+| `.birth_date` | string | ○ | — | ○ | — | `YYYY-MM-DD`. Provide `birth_date` or `age` (at least one) |
+| `.age` | number (15–99) | ○ | — | ○ | — | Driver's age in years. Use instead of `birth_date` if PII is a concern on pings |
 | `.gender` | enum | ✅ | — | ✅ | — | `"male"` `"female"` |
 | `.marital_status` | enum | ✅ | — | ✅ | — | `"single"` `"married"` `"divorced"` `"separated"` `"widowed"` `"domestic_partnership"` `"civil_union"` |
 | `.us_resident_past_twelve_months` | boolean | ○ | — | ○ | — | Has driver been a US resident for the past 12 months? |
