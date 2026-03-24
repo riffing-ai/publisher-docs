@@ -53,7 +53,6 @@ curl -X POST https://api.autobind.ai/leads/post \
     "first_name": "John", "last_name": "Doe",
     "contact_phone": "2145559012", "email": "john@example.com",
     "street_address": "123 Main St", "city": "Dallas",
-    "state_abbreviation": "TX", "zip": "75201",
     "drivers": [{ "first_name": "John", "last_name": "Doe", "relationship_to_policyholder": "self" }]
   }'
 # → { "status": "accepted", "bid_id": "..." }
@@ -331,8 +330,8 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 | `media_type` | `"lead"` / `"call"` | ✅ | ✅ | ✅ | ✅ |  |
 | `bid_id` | UUID | — | ✅ | — | ✅ | From ping response |
 | `external_id` | string (100) | ○ | ○ | ○ | ○ | Your ID — echoed in responses. Omitted from response if not provided |
-| `state_abbreviation` | string (2) | ✅ | ✅ | ✅ | ○ | `"TX"` — 2 uppercase letters |
-| `zip` | string (5) | ✅ | ✅ | ○ | ○ | 5 digits, e.g. `"75201"` |
+| `state_abbreviation` | string (2) | ✅ | — | ✅ | ○ | `"TX"` — 2 uppercase letters |
+| `zip` | string (5) | ✅ | — | ○ | ○ | 5 digits, e.g. `"75201"` |
 | `language` | `"en"` / `"es"` | ○ | ○ | ✅ | ○ | English / Spanish. Required for calls |
 | `currently_insured` | boolean | ✅ | — | ✅ | — | Does the policyholder currently have an active auto insurance policy? |
 | `home_ownership` | boolean | ✅ | — | ○ | — | Does the policyholder own their home? |
@@ -365,7 +364,7 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 | `media_source` | string | ○ | — | ○ | — | `"Google"`, `"Facebook"`, etc. |
 | `traffic_channel` | enum | ○ | — | ○ | — | `"cpc"` `"organic"` `"display"` `"social"` `"email"` |
 | `placement_type` | enum | ○ | — | ○ | — | `"thank_you_page"` `"early_exit"` `"form_page"` |
-| `landing_page` | string (500) | ✅ | — | ○ | — | URL consumer came from |
+| `landing_page` | string (500) | ○ | — | ○ | — | URL consumer came from |
 | `search_keyword` | string | ○ | — | ○ | — |  |
 
 ### Policyholder Contact & Address (post only)
@@ -414,7 +413,7 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 | `.gender` | enum | ✅ | — | ✅ | — | `"male"` `"female"` |
 | `.marital_status` | enum | ✅ | — | ✅ | — | `"single"` `"married"` `"divorced"` `"separated"` `"widowed"` `"domestic_partnership"` `"civil_union"` |
 | `.us_resident_past_twelve_months` | boolean | ○ | — | ○ | — | Has driver been a US resident for the past 12 months? |
-| `.license_status` | enum | ✅ | — | ✅ | — | `"active"` `"suspended"` `"revoked"` `"expired"` `"permit"` `"no_license"` |
+| `.license_status` | enum | ✅ | — | ✅ | — | `"active"` `"suspended"` `"revoked"` `"expired"` `"permit"` `"no_license"`. Default `"active"` if not collected |
 | `.license_state_or_country` | string | ○ | — | ○ | — | US: `"CA"`. Foreign: `"Mexico"` |
 | `.license_number` | string (100) | — | ○ | — | ○ |  |
 | `.age_first_licensed` | number (14–99) | ○ | — | ○ | — | Age when first licensed |
@@ -457,7 +456,7 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 | `.vin` | string (17) | ○ | — | ○ | — | Exactly 17 characters |
 | `.license_plate_state` | string (2) | ○ | — | ○ | — | `"TX"` |
 | `.license_plate` | string | ○ | — | ○ | — | License plate number |
-| `.commercial_use` | boolean | ✅ | — | ○ | — | Is this vehicle used for commercial/business purposes? Default `false` |
+| `.commercial_use` | boolean | ✅ | — | ○ | — | Is this vehicle used for commercial/business purposes? Default `false` if not collected |
 | `.type_of_commercial_use` | enum | ○ | — | ○ | — | `"clergy"` `"courier_service"` `"daycare"` `"delivery_fast_food"` `"delivery_retail_wholesale"` `"delivery_route"` `"delivery_us_mail"` `"delivery_and_sales"` `"doctor_professional"` `"farm_use"` `"lawyer_professional"` `"real_estate"` `"repair_installation"` `"ridesharing"` `"sales_multistate"` `"sales_route"` `"sales_calls"` `"social_worker"` `"transport_people"` `"travel_to_jobsites"` `"travel_to_meetings"` `"visit_clients"` `"visit_outside_offices"`. Map rideshare (Uber, Lyft) to `"transport_people"` |
 | `.primary_driver` | boolean | ○ | — | ○ | — | Is this the primary driver of this vehicle? |
 | `.ownership` | enum | ○ | — | ○ | — | `"fully_paid"` `"financed"` `"leased"` |
@@ -846,7 +845,7 @@ interface LeadPingRequest {
   campaign_name: string; // required for leads
   placement_type?: PlacementType;
   search_keyword?: string;
-  landing_page: string; // required for leads
+  landing_page?: string;
   ip_address: string;
   user_agent: string; // required for leads
   lead_created_at: string;
@@ -946,8 +945,6 @@ interface LeadPostRequest {
   email: string;
   street_address: string;
   city: string;
-  state_abbreviation: string;
-  zip: string;
   language?: Language;
   drivers: LeadPostDriver[]; // PII only — no vehicles on post
 }
