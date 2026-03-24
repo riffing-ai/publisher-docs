@@ -309,7 +309,9 @@ Transfer the consumer to `transfer_phone`. The call must last at least `minimum_
 
 ### `trusted_form_url`
 
-Required for all lead posts. This is a [TrustedForm](https://activeprospect.com/trustedform/) certificate URL from ActiveProspect that proves the consumer consented on your form. Leads without it are rejected with `"missing_consent_proof"`.
+Required for all leads — can be sent on either the **ping** or the **post**. This is a [TrustedForm](https://activeprospect.com/trustedform/) certificate URL from ActiveProspect that proves the consumer consented on your form. Leads without it on either request are rejected with `"missing_consent_proof"`.
+
+We encourage sending `trusted_form_url` (and all compliance fields) on the **ping**. The TrustedForm certificate is generated at form fill time, before you have PII — so it's available when you ping. Sending it early means your post only needs `bid_id`, PII, and driver identity.
 
 ---
 ## Field Reference
@@ -340,10 +342,10 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 
 | Field | Type | Lead Ping | Lead Post | Call Ping | Call Post | Description |
 |-------|------|-----------|-----------|-----------|-----------|-------------|
-| `trusted_form_url` | string (500) | — | ✅ | — | ○ | **Required for leads.** TrustedForm cert URL |
-| `tcpa_language` | string (2000) | ○ | ○ | ○ | ○ | TCPA consent text shown on the form. Stored with the bid if sent on ping |
-| `tcpa_json` | string (5000) | — | ○ | — | ○ | Structured TCPA consent data (includes consumer IP, timestamp) |
-| `leadid_token` | string | — | ○ | — | ○ | Jornaya LeadiD token |
+| `trusted_form_url` | string (500) | ○ | ✅ | ○ | ○ | **Required for leads** (on ping or post). TrustedForm cert URL. We encourage sending this on the ping — the certificate is generated at form fill time, so it's available before PII |
+| `tcpa_language` | string (2000) | ○ | ○ | ○ | ○ | TCPA consent text shown on the form. We encourage sending this on the ping |
+| `tcpa_json` | string (5000) | ○ | ○ | ○ | ○ | Structured TCPA consent data (includes consumer IP, timestamp). We encourage sending this on the ping |
+| `leadid_token` | string | ○ | ○ | ○ | ○ | Jornaya LeadiD token. We encourage sending this on the ping |
 
 ### Submission Metadata
 
