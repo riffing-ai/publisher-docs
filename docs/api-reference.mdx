@@ -977,7 +977,7 @@ interface LeadAcceptedResponse {
 
 interface RejectedResponse {
   status: "rejected";
-  reason: string;
+  reason: "invalid_bid" | "bid_expired" | "duplicate_phone" | "missing_consent_proof" | "failed_secondary_evaluation";
 }
 
 type PostResponse = CallAcceptedResponse | LeadAcceptedResponse | RejectedResponse;
