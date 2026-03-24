@@ -32,6 +32,7 @@ curl -X POST https://api.autobind.ai/leads/ping \
     "lead_created_at": "2026-03-23T14:30:00Z",
     "state_abbreviation": "TX",
     "zip": "75201",
+    "language": "en",
     "currently_insured": true,
     "sr_twenty_two": false,
     "home_ownership": false,
@@ -191,6 +192,7 @@ curl -X POST https://api.autobind.ai/leads/ping \
     "lead_created_at": "2026-03-22T14:30:00Z",
     "state_abbreviation": "TX",
     "zip": "75201",
+    "language": "en",
     "currently_insured": true,
     "sr_twenty_two": false,
     "home_ownership": false,
@@ -481,6 +483,7 @@ Full realistic payloads showing all nesting. `drivers[0]` is always the policyho
   "lead_created_at": "2026-03-23T14:30:00Z",
   "state_abbreviation": "TX",
   "zip": "75201",
+  "language": "en",
   "currently_insured": true,
   "sr_twenty_two": false,
   "home_ownership": false,
@@ -845,7 +848,7 @@ interface LeadPingRequest {
   home_ownership: boolean; // required for leads
   credit_status?: CreditStatus;
   residence_type?: ResidenceType;
-  language?: Language;
+  language: Language; // required for leads
   drivers: LeadPingDriver[]; // required, 1–6
   vehicles: LeadPingVehicle[]; // required, 1–6
 }
