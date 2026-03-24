@@ -808,9 +808,8 @@ interface PingVehicle {
 }
 
 // Lead ping driver/vehicle — commercial_use is required
-interface LeadPingDriver extends PingDriver {
-  incidents?: PingIncident[]; // omit if none
-}
+// LeadPingDriver is the same as PingDriver — no additional fields
+type LeadPingDriver = PingDriver;
 
 interface LeadPingVehicle extends PingVehicle {
   commercial_use: boolean;
