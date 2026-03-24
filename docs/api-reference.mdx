@@ -45,7 +45,7 @@ curl -X POST https://api.autobind.ai/leads/ping \
     "currently_insured": true,
     "sr_twenty_two": false,
     "home_ownership": false,
-    "drivers": [{ "gender": "male", "birth_date": "1990-06-15", "marital_status": "married", "license_status": "active" }],
+    "drivers": [{ "gender": "male", "age": 35, "marital_status": "married", "license_status": "active" }],
     "vehicles": [{ "year": 2021, "make": "Toyota", "model": "Camry", "commercial_use": false }]
   }'
 # → { "status": "bid", "bid_id": "...", "price": "4.20" }
@@ -61,7 +61,7 @@ curl -X POST https://api.autobind.ai/leads/post \
     "first_name": "John", "last_name": "Doe",
     "contact_phone": "2145559012", "email": "john@example.com",
     "street_address": "123 Main St", "city": "Dallas",
-    "drivers": [{ "first_name": "John", "last_name": "Doe", "relationship_to_policyholder": "self" }]
+    "drivers": [{ "first_name": "John", "last_name": "Doe", "relationship_to_policyholder": "self", "birth_date": "1990-06-15" }]
   }'
 # → { "status": "accepted", "bid_id": "..." }
 ```
@@ -213,7 +213,7 @@ curl -X POST https://api.autobind.ai/leads/ping \
     "drivers": [
       {
         "gender": "male",
-        "birth_date": "1990-06-15",
+        "age": 35,
         "marital_status": "married",
         "license_status": "active",
         "incidents": [
@@ -225,7 +225,7 @@ curl -X POST https://api.autobind.ai/leads/ping \
       },
       {
         "gender": "female",
-        "birth_date": "1992-04-28",
+        "age": 33,
         "marital_status": "married",
         "license_status": "active",
         "incidents": [
@@ -502,7 +502,7 @@ Full realistic payloads showing all nesting. `drivers[0]` is always the policyho
   "drivers": [
     {
       "gender": "male",
-      "birth_date": "1985-06-15",
+      "age": 40,
       "marital_status": "married",
       "license_status": "active",
       "incidents": [
@@ -515,7 +515,7 @@ Full realistic payloads showing all nesting. `drivers[0]` is always the policyho
     },
     {
       "gender": "female",
-      "birth_date": "1987-04-28",
+      "age": 38,
       "marital_status": "married",
       "license_status": "active",
       "incidents": [
@@ -556,12 +556,14 @@ Full realistic payloads showing all nesting. `drivers[0]` is always the policyho
       "first_name": "John",
       "last_name": "Doe",
       "relationship_to_policyholder": "self",
+      "birth_date": "1985-06-15",
       "license_number": "12345678"
     },
     {
       "first_name": "Jane",
       "last_name": "Doe",
       "relationship_to_policyholder": "spouse",
+      "birth_date": "1987-04-28",
       "license_number": "87654321"
     }
   ]
@@ -783,8 +785,10 @@ type Language = "en" | "es";
 
 interface PingDriver {
   gender: "male" | "female";
-  birth_date: string;
+  birth_date?: string; // Provide birth_date or age (at least one)
+  age?: number; // 15–99. Use instead of birth_date if PII is a concern
   marital_status: MaritalStatus;
+  relationship_to_policyholder?: "self" | "spouse" | "child" | "parent" | "sibling" | "other";
   license_status: "active" | "suspended" | "revoked" | "expired" | "permit" | "no_license";
   sr_twenty_two?: boolean; // Per-driver SR-22. When provided, takes precedence over top-level for this driver
   incidents?: PingIncident[]; // omit if none
