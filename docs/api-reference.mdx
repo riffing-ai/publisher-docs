@@ -663,6 +663,8 @@ Multiple errors:
 | `POST /leads/post` | 20 req/sec |
 | `GET /leads/status/:id` | 50 req/sec |
 
+No `Retry-After` header is included. Wait 1 second before retrying.
+
 ### HTTP 500 — Internal Error
 
 Safe to retry (see Retry section).
