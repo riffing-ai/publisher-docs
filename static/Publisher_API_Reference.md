@@ -461,7 +461,7 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 | `.vehicle_purchase_date` | string | ○ | — | ○ | — | `YYYY-MM-DD` — Date vehicle was purchased |
 | `.annual_mileage` | number | ○ | — | ○ | — | Estimated annual miles driven |
 | `.current_mileage` | number | ○ | — | ○ | — | Current odometer reading |
-| `.average_mileage` | number | ○ | — | ○ | — | Average miles driven per day |
+| `.average_daily_mileage` | number | ○ | — | ○ | — | Average miles driven per day |
 | `.commute_distance` | number (0–500) | ○ | — | ○ | — | One-way commute distance in miles |
 | `.commute_days_per_week` | number (0–7) | ○ | — | ○ | — | Days per week driven to work |
 | `.alarm` | boolean | ○ | — | ○ | — | Vehicle has anti-theft alarm? |
