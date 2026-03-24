@@ -408,7 +408,7 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 | `.first_name` | string (100) | — | ✅ | — | ○ |  |
 | `.middle_name` | string (100) | — | ○ | — | ○ |  |
 | `.last_name` | string (100) | — | ✅ | — | ○ |  |
-| `.relationship_to_policyholder` | enum | — | ✅ | — | ○ | `"self"` `"spouse"` `"child"` `"parent"` `"sibling"` `"other"` — `"self"` must always be `drivers[0]` |
+| `.relationship_to_policyholder` | enum | ○ | ✅ | ○ | ○ | `"self"` `"spouse"` `"child"` `"parent"` `"sibling"` `"other"` — `"self"` must always be `drivers[0]` |
 | `.birth_date` | string | ✅ | — | ✅ | — | `YYYY-MM-DD` |
 | `.gender` | enum | ✅ | — | ✅ | — | `"male"` `"female"` |
 | `.marital_status` | enum | ✅ | — | ✅ | — | `"single"` `"married"` `"divorced"` `"separated"` `"widowed"` `"domestic_partnership"` `"civil_union"` |
