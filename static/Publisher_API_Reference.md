@@ -392,7 +392,7 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 | `current_bi_per_person` | number | ○ | — | ○ | — | Current bodily injury limit per person in dollars, e.g. `30000` |
 | `current_bi_per_accident` | number | ○ | — | ○ | — | Current bodily injury limit per accident in dollars, e.g. `60000` |
 | `continuous_insurance_duration` | enum | ○ | — | ○ | — | How long continuously insured: `"less_than_6_months"` `"6_months_to_1_year"` `"1_to_2_years"` `"2_to_5_years"` `"5_plus_years"` |
-| `lapse_duration` | enum | ○ | — | ○ | — | Not currently insured only. How long without insurance: `"1-15 days"` `"16-30 days"` `"31 days - 6 months"` `"6 months - 1 year"` `"1 year - 4 years"` `"5 years or greater"` |
+| `lapse_duration` | enum | ○ | — | ○ | — | Not currently insured only. How long without insurance: `"1_to_15_days"` `"16_to_30_days"` `"31_days_to_6_months"` `"6_months_to_1_year"` `"1_to_4_years"` `"5_plus_years"` |
 | `lapse_reason` | enum | ○ | — | ○ | — | Not currently insured only. Why the policyholder lapsed: `"military"` `"no_vehicle"` `"no_license"` `"no_need"` `"other"` |
 | `coverage_type` | enum | ○ | — | ○ | — | Policyholder's **desired** coverage level for the new policy (not current): `"state_minimum"` `"basic"` `"superior"` `"premium"` |
 | `policy_start_date` | string | ○ | — | ○ | — | Policyholder's desired start date for the new policy (`YYYY-MM-DD`) |
