@@ -91,8 +91,8 @@ curl -X POST https://api.autobind.ai/leads/post \
     "bid_id": "BID_ID_FROM_PING",
     "dial_in_phone": "2145559688"
   }'
-# → { "status": "accepted", "bid_id": "...", "transfer_phone": "8773119191", "minimum_call_duration": 90 }
-# Transfer the consumer to transfer_phone (8773119191).
+# → { "status": "ok" }
+# Transfer the consumer to transfer_phone from step 1.
 # Call must last at least minimum_call_duration (90) seconds to qualify for payment.
 ```
 
@@ -296,10 +296,10 @@ Posting after expiry returns `{"status": "rejected", "reason": "bid_expired"}`.
 
 **Call:**
 ```json
-{ "status": "accepted", "bid_id": "550e8400-...", "external_id": "your-id", "transfer_phone": "8773119191", "minimum_call_duration": 90 }
+{ "status": "ok" }
 ```
 
-Transfer the consumer to `transfer_phone`. The call must last at least `minimum_call_duration` seconds to qualify for payment.
+Once accepted, transfer the consumer to the `transfer_phone` returned in the ping response. The call must last at least `minimum_call_duration` seconds to qualify for payment.
 
 ### Rejected Response
 
@@ -311,7 +311,8 @@ Transfer the consumer to `transfer_phone`. The call must last at least `minimum_
 |--------|---------|
 | `invalid_bid` | bid_id not found, wrong partner, or media type mismatch |
 | `bid_expired` | Bid has expired (leads: 90s, calls: 60s) |
-| `duplicate_phone` | Phone number seen in last 30 days |
+| `duplicate_phone` | Phone number seen in last 30 days (leads) |
+| `duplicate_call` | Same phone had a billable call from your account in the last hour (calls) |
 | `missing_consent_proof` | `trusted_form_cert_url` is missing (leads only) |
 | `failed_secondary_evaluation` | Lead data failed our evaluation (leads only) |
 
@@ -961,12 +962,7 @@ type PostRequest = CallPostRequest | LeadPostRequest;
 // ── Post Responses ──
 
 interface CallAcceptedResponse {
-  status: "accepted";
-  bid_id: string;
-  external_id?: string;
-  transfer_phone: string;
-  minimum_call_duration: number;
-  warnings?: string[];
+  status: "ok";
 }
 
 interface LeadAcceptedResponse {
@@ -978,7 +974,7 @@ interface LeadAcceptedResponse {
 
 interface RejectedResponse {
   status: "rejected";
-  reason: "invalid_bid" | "bid_expired" | "duplicate_phone" | "missing_consent_proof" | "failed_secondary_evaluation";
+  reason: "invalid_bid" | "bid_expired" | "duplicate_phone" | "duplicate_call" | "missing_consent_proof" | "failed_secondary_evaluation";
 }
 
 type PostResponse = CallAcceptedResponse | LeadAcceptedResponse | RejectedResponse;
