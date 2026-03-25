@@ -123,7 +123,7 @@ All requests require your API key in the `Authorization` header:
 Authorization: Bearer YOUR_API_KEY
 ```
 
-Keys are issued per partner during onboarding. The key identifies your account — no partner ID is needed in the request body.
+Keys are issued per partner during onboarding. The key identifies your account — no partner ID is needed in the request body. This is a server-to-server API — CORS is not supported, so do not call it from browser-side code.
 
 ---
 
