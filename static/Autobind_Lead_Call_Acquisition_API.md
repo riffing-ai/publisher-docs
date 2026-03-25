@@ -346,7 +346,7 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 
 | Field | Type | Lead Ping | Lead Post | Call Ping | Call Post | Description |
 |-------|------|-----------|-----------|-----------|-----------|-------------|
-| `trusted_form_cert_url` | string (500) | ○ | ✅ | ○ | ○ | **Required for leads** (on ping or post). TrustedForm cert URL. We encourage sending this on the ping — the certificate is generated at form fill time, so it's available before PII |
+| `trusted_form_cert_url` | string (500) | ○ | ○ | ○ | ○ | **Required for leads** — send on ping or post (ping strongly recommended). TrustedForm cert URL proving consumer consent |
 | `tcpa_language` | string (2000) | ○ | ○ | ○ | ○ | TCPA consent text shown on the form. We encourage sending this on the ping |
 | `tcpa_json` | string (5000) | ○ | ○ | ○ | ○ | Structured TCPA consent data (includes consumer IP, timestamp). We encourage sending this on the ping |
 | `leadid_token` | string | ○ | ○ | ○ | ○ | Jornaya LeadiD token. We encourage sending this on the ping |
@@ -736,7 +736,7 @@ If provided, exactly 17 characters.
 
 ### Critical rules
 - `drivers[0].relationship_to_policyholder` must be `"self"` on lead posts
-- `trusted_form_cert_url` (TrustedForm by ActiveProspect) is **required** on lead posts
+- `trusted_form_cert_url` (TrustedForm by ActiveProspect) is **required** for leads — send on the ping or the post (ping recommended)
 - Unknown fields are silently stripped and returned as `warnings` in the response (not rejected)
 
 ---
