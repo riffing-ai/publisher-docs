@@ -92,7 +92,7 @@ curl -X POST https://api.autobind.ai/leads/post \
 
 ## How It Works
 
-> **Ping = bid parameters. Post = PII + compliance.** All demographic, insurance, driver, vehicle, and incident data is sent on the **ping** — these are the parameters we use to calculate your bid. The **post** contains only personally identifiable information (names, phones, email, address), driver identity, and compliance proof. Bid parameters sent on the ping are stored with the bid and used when we process the lead.
+> **Ping = bid parameters. Post = PII.** All demographic, insurance, driver, vehicle, and incident data is sent on the **ping** — these are the parameters we use to calculate your bid. The **post** contains only personally identifiable information (names, phones, email, address) and driver identity. Compliance proof (`trusted_form_cert_url`) can be sent on either request, but we strongly recommend including it on the ping — it's available at form fill time and lets us validate consent before you send PII.
 
 ### Lead Flow
 
