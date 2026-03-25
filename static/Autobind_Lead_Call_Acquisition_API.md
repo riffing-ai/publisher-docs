@@ -3,6 +3,18 @@
      TypeScript types, validation rules, and examples. The TypeScript types section is
      authoritative for request/response shapes. -->
 
+### Required Fields Quick Reference
+
+**Lead ping:** `media_type`, `campaign_name`, `ip_address`, `user_agent`, `lead_created_at`, `state_abbreviation`, `zip`, `currently_insured`, `sr_twenty_two`, `home_ownership`, `drivers[].gender`, `drivers[].marital_status`, `drivers[].license_status`, `drivers[]{birth_date or age}`, `vehicles[].year`, `vehicles[].make`, `vehicles[].model`, `vehicles[].commercial_use`
+
+**Lead post:** `media_type`, `bid_id`, `trusted_form_cert_url` (if not on ping), `first_name`, `last_name`, `contact_phone`, `email`, `street_address`, `city`, `drivers[].first_name`, `drivers[].last_name`, `drivers[].relationship_to_policyholder`
+
+**Call ping:** `media_type`, `state_abbreviation`, `currently_insured`, `language`
+
+**Call post:** `media_type`, `bid_id`, `dial_in_phone`
+
+---
+
 # Autobind Lead & Call Acquisition API
 
 *Last updated: 2026-03-23*
