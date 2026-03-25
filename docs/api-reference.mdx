@@ -316,13 +316,16 @@ Once accepted, transfer the consumer to the `transfer_phone` returned in the pin
 | `missing_consent_proof` | `trusted_form_cert_url` is missing (leads only) |
 | `failed_secondary_evaluation` | Lead data failed our evaluation (leads only) |
 
-### `trusted_form_cert_url`
+---
 
-Required for all leads — can be sent on either the **ping** or the **post**. This is a [TrustedForm](https://activeprospect.com/trustedform/) certificate URL from ActiveProspect that proves the consumer consented on your form. Leads without it on either request are rejected with `"missing_consent_proof"`.
+## Compliance Proof
+
+`trusted_form_cert_url` is required for all leads — it can be sent on either the **ping** or the **post** (not both needed). This is a [TrustedForm](https://activeprospect.com/trustedform/) certificate URL from ActiveProspect that proves the consumer consented on your form. Leads missing it on both requests are rejected with `"missing_consent_proof"`.
 
 We strongly recommend sending `trusted_form_cert_url` (and all compliance fields) on the **ping**. The TrustedForm certificate is generated at form fill time, before you have PII — so it's available when you ping. Sending it early means your post only needs `bid_id`, PII, and driver identity.
 
 ---
+
 ## Field Reference
 
 All ping and post fields in one table. ✅ = required, ○ = optional, — = not applicable.
@@ -839,6 +842,10 @@ interface CallPingRequest {
   language: Language; // required for calls
   credit_status?: CreditStatus;
   residence_type?: ResidenceType;
+  trusted_form_cert_url?: string;
+  tcpa_language?: string;
+  tcpa_json?: string;
+  leadid_token?: string;
   drivers?: PingDriver[];
   vehicles?: PingVehicle[];
 }
@@ -864,6 +871,10 @@ interface LeadPingRequest {
   credit_status?: CreditStatus;
   residence_type?: ResidenceType;
   language?: Language;
+  trusted_form_cert_url?: string;
+  tcpa_language?: string;
+  tcpa_json?: string;
+  leadid_token?: string;
   drivers: LeadPingDriver[]; // required, 1–6
   vehicles: LeadPingVehicle[]; // required, 1–6
 }
@@ -939,7 +950,7 @@ interface LeadPostDriver {
 interface LeadPostRequest {
   media_type: "lead";
   bid_id: string;
-  trusted_form_cert_url: string; // REQUIRED — TrustedForm by ActiveProspect
+  trusted_form_cert_url?: string; // Required for leads — send on ping or post (not both needed)
   tcpa_language?: string;
   tcpa_json?: string;
   leadid_token?: string;
@@ -1011,6 +1022,7 @@ interface ErrorResponse {
 type MaritalStatus = "single" | "married" | "divorced" | "separated" | "widowed" | "domestic_partnership" | "civil_union";
 type CreditStatus = "excellent" | "above_average" | "average" | "below_average" | "poor";
 type ResidenceType = "single_family_home" | "townhouse" | "condo" | "apartment" | "mobile_home" | "other";
+type ViolationType = "driving_under_the_influence" | "speeding" | "driving_while_using_a_cell_phone" | "other";
 type Education = "less_than_high_school" | "vocational" | "high_school" | "high_school_pursuing_bachelors" | "associate" | "associate_pursuing_bachelors" | "bachelors" | "bachelors_pursuing_graduate" | "masters" | "doctors" | "lawyer" | "phd";
 type EmploymentStatus = "company" | "self" | "military" | "government" | "retired" | "student" | "homemaker" | "unemployed";
 type Industry = "financial" | "agriculture" | "arts" | "assistants" | "automotive" | "cleaning" | "computers" | "construction" | "counseling" | "education" | "engineering" | "executives" | "health" | "law" | "operators" | "postal" | "maintenance" | "service" | "food" | "sales" | "science" | "travel";
