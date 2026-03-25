@@ -4,7 +4,7 @@
 
 ## Overview
 
-JSON API for submitting auto insurance leads and call transfers via ping-post. You ping with bid parameters (demographics, drivers, vehicles) to get a price, then post the consumer's PII and compliance proof if you accept our bid.
+JSON API for submitting auto insurance leads and call transfers via ping-post. You ping with bid parameters (demographics, drivers, vehicles) to get a price, then post the consumer's PII if you accept our bid. Compliance proof (TrustedForm) can go on either request but we strongly recommend the ping.
 
 **Two media types:**
 - **`lead`** — Form-submitted consumer data. We buy the data.
@@ -42,7 +42,7 @@ curl -X POST https://api.autobind.ai/leads/ping \
   }'
 # → { "status": "bid", "bid_id": "...", "price": "4.20" }
 
-# 2. Post PII + compliance (use the bid_id from step 1)
+# 2. Post PII (use the bid_id from step 1)
 curl -X POST https://api.autobind.ai/leads/post \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
@@ -99,7 +99,7 @@ curl -X POST https://api.autobind.ai/leads/post \
 1. Consumer submits a form on your site
 2. You **ping** us with the required fields (state, insured status, drivers, vehicles) plus any optional fields you have — more data improves bid accuracy
 3. We return a `bid_id` and `price`, or decline
-4. If you accept our bid, you **post** the consumer's PII (name, phone, email, address) and compliance proof (TrustedForm URL) along with the `bid_id`. Bid parameters from the ping are already stored with the bid
+4. If you accept our bid, you **post** the consumer's PII (name, phone, email, address) along with the `bid_id`. Bid parameters and compliance proof from the ping are already stored with the bid
 5. We accept or reject the post — use `GET /leads/status/{bid_id}` to check status later
 
 ### Call Flow
@@ -312,14 +312,14 @@ Once accepted, transfer the consumer to the `transfer_phone` returned in the pin
 
 Required for all leads — can be sent on either the **ping** or the **post**. This is a [TrustedForm](https://activeprospect.com/trustedform/) certificate URL from ActiveProspect that proves the consumer consented on your form. Leads without it on either request are rejected with `"missing_consent_proof"`.
 
-We encourage sending `trusted_form_cert_url` (and all compliance fields) on the **ping**. The TrustedForm certificate is generated at form fill time, before you have PII — so it's available when you ping. Sending it early means your post only needs `bid_id`, PII, and driver identity.
+We strongly recommend sending `trusted_form_cert_url` (and all compliance fields) on the **ping**. The TrustedForm certificate is generated at form fill time, before you have PII — so it's available when you ping. Sending it early means your post only needs `bid_id`, PII, and driver identity.
 
 ---
 ## Field Reference
 
 All ping and post fields in one table. ✅ = required, ○ = optional, — = not applicable.
 
-> See the key principle above: **ping = bid parameters, post = PII + compliance.**
+> See the key principle above: **ping = bid parameters (+ compliance), post = PII.**
 
 > **Call posts:** Only `media_type`, `bid_id`, and `dial_in_phone` are required. All other fields are optional — but including lead data improves conversion rates and the price we're willing to pay on future bids.
 
@@ -533,7 +533,7 @@ Full realistic payloads showing all nesting. `drivers[0]` is always the policyho
 }
 ```
 
-### Lead Post — PII + compliance for the same household
+### Lead Post — PII for the same household
 
 ```json
 {
