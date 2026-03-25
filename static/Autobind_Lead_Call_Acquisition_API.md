@@ -1,3 +1,8 @@
+<!-- This document is the complete API reference for the Autobind Lead & Call Acquisition API.
+     It contains everything needed to build a working integration: endpoints, field schemas,
+     TypeScript types, validation rules, and examples. The TypeScript types section is
+     authoritative for request/response shapes. -->
+
 # Autobind Lead & Call Acquisition API
 
 *Last updated: 2026-03-23*
