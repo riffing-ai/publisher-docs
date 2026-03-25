@@ -535,6 +535,22 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 
 ---
 
+## Data Mapping Guide
+
+When mapping your internal data to this API:
+
+1. **Match by semantics, not field names** — Your `license_type` may map to our `license_status`. Your `insured` may map to our `currently_insured`. Use field descriptions and enum values to find the correct match, not field name similarity.
+
+2. **Convert state names to 2-letter codes** — We require uppercase abbreviations: `"TX"`, not `"Texas"` or `"tx"`.
+
+3. **Nest incidents under their driver** — If your data stores incidents in a flat array or at the root level, associate each incident with the correct `drivers[].incidents[]` object. Incidents are always per-driver, never top-level.
+
+4. **Drop unmapped fields** — If a field in your data has no corresponding field in our schema, omit it. Unknown fields are silently stripped (and returned as `warnings` in the response).
+
+5. **Use enums exactly as documented** — Enum values are lowercase with underscores: `"married"` not `"Married"`, `"driving_under_the_influence"` not `"DUI"`. See the TypeScript types for the complete set of valid values.
+
+---
+
 ## Detailed Examples
 
 Full realistic payloads showing all nesting. `drivers[0]` is always the policyholder.
