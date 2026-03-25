@@ -166,6 +166,36 @@ curl -X POST https://api.autobind.ai/leads/ping \
   }'
 ```
 
+### Call Ping — Rich Request (optional driver/vehicle data)
+
+Including driver and vehicle data is optional for calls, but improves bid accuracy and the price we return.
+
+```bash
+curl -X POST https://api.autobind.ai/leads/ping \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "media_type": "call",
+    "external_id": "your-unique-id-789",
+    "state_abbreviation": "CA",
+    "zip": "90210",
+    "currently_insured": true,
+    "language": "en",
+    "trusted_form_cert_url": "https://cert.trustedform.com/abc123def456",
+    "drivers": [
+      {
+        "gender": "female",
+        "birth_date": "1988-04-12",
+        "marital_status": "married",
+        "license_status": "active"
+      }
+    ],
+    "vehicles": [
+      { "year": 2022, "make": "Honda", "model": "Civic", "commercial_use": false }
+    ]
+  }'
+```
+
 ### Call Ping — Bid Response
 
 ```json
@@ -181,7 +211,7 @@ curl -X POST https://api.autobind.ai/leads/ping \
 
 - `bid_id` — Include this in your post request
 - `external_id` — Your ID echoed back so you can match this response to your consumer
-- `transfer_phone` — The phone number to transfer the consumer's call to
+- `transfer_phone` — The phone number to transfer the consumer's call to (10 digits, no country code)
 - `minimum_call_duration` — Seconds the call must last to qualify for payment
 
 ### Lead Ping — Request
@@ -208,10 +238,11 @@ curl -X POST https://api.autobind.ai/leads/ping \
     "sr_twenty_two": false,
     "home_ownership": false,
     "credit_status": "average",
+    "trusted_form_cert_url": "https://cert.trustedform.com/abc123def456",
     "drivers": [
       {
         "gender": "male",
-        "age": 35,
+        "birth_date": "1990-06-15",
         "marital_status": "married",
         "license_status": "active",
         "incidents": [
@@ -276,6 +307,30 @@ Lead bids do NOT include `transfer_phone` or `minimum_call_duration`.
 | Reason | Meaning |
 |--------|---------|
 | `no_bid` | Data validated successfully but no bid is available. This covers all cases where we choose not to buy (state not supported, budget exhausted, doesn't meet criteria, outside operating hours, zip issues, etc.) |
+
+### Handling Ping Responses
+
+```pseudocode
+response = ping(consumer_data)
+
+if response.status == "bid":
+    // We want to buy — post PII to accept
+    post_response = post(bid_id, pii)
+    if post_response.status == "accepted" or post_response.status == "ok":
+        // Success — for calls, transfer consumer to transfer_phone from ping
+    else:
+        // Rejected — check post_response.reason (duplicate, expired, etc.)
+
+else if response.status == "decline":
+    // We don't want this lead/call — try another buyer or skip
+    log(response.reason, response.message)
+
+else if response.status == "error":
+    // Bad request — fix the payload based on response.errors[]
+    log(response.errors)
+```
+
+---
 
 ## POST /leads/post
 
@@ -888,7 +943,7 @@ interface CallBidResponse {
   bid_id: string;
   external_id?: string;
   price: string; // USD, always 2 decimal places, e.g. "12.40"
-  transfer_phone: string;
+  transfer_phone: string; // 10 digits, no country code
   minimum_call_duration: number;
   warnings?: string[]; // e.g. ["Unknown field 'dui' was ignored"]
 }
