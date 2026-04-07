@@ -1134,3 +1134,13 @@ type CommercialUseType =
   | "daycare" | "farm_use" | "real_estate" | "repair_installation";
 type CurrentCompany = "21stCentury" | "AAA" | "Allstate" | "AmFam" | "Amica" | "AssuranceAmerica" | "BristolWest" | "Dairyland" | "DirectAuto" | "Elephant" | "Erie" | "Esurance" | "Farmers" | "Gainsco" | "Geico" | "Hartford" | "Infinity" | "Kemper" | "LibertyMutual" | "Mercury" | "MetLife" | "NationalGeneral" | "Nationwide" | "Progressive" | "Root" | "SafeAuto" | "Safeco" | "StateFarm" | "TheGeneral" | "Travelers" | "USAA" | "other";
 ```
+
+---
+
+## Changelog
+
+| Date | Change |
+|------|--------|
+| 2026-04-07 | Added `lead_type` field (`"exclusive"` / `"shared"`) to lead pings — defaults to `"shared"` if omitted. Exclusive leads receive higher bids |
+| 2026-04-07 | Documented `current_policy_expires` date range: must be today or later, no more than 1 year in the future |
+| 2026-03-23 | Initial release |
