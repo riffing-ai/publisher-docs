@@ -17,7 +17,7 @@
 
 # Autobind Lead & Call Acquisition API
 
-*Last updated: 2026-03-23*
+*Last updated: 2026-04-07*
 
 ## Overview
 
@@ -42,6 +42,7 @@ curl -X POST https://api.autobind.ai/leads/ping \
   -H "Content-Type: application/json" \
   -d '{
     "media_type": "lead",
+    "lead_type": "exclusive",
     "campaign_name": "google-auto-full-form",
     "ip_address": "73.162.100.50",
     "user_agent": "Mozilla/5.0 Chrome/120.0.0.0",
@@ -233,6 +234,7 @@ curl -X POST https://api.autobind.ai/leads/ping \
   -H "Content-Type: application/json" \
   -d '{
     "media_type": "lead",
+    "lead_type": "exclusive",
     "external_id": "your-unique-id-456",
     "campaign_name": "google-auto-full-form",
     "ip_address": "73.162.100.50",
@@ -412,6 +414,7 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 | `currently_insured` | boolean | ✅ | — | ✅ | — | Does the policyholder currently have an active auto insurance policy? |
 | `home_ownership` | boolean | ✅ | — | ○ | — | Does the policyholder own their home? |
 | `sr_twenty_two` | boolean | ✅ | — | ○ | — | `true` if **any** driver in the household has an SR-22, FR-44, or similar filing. For per-driver detail, use `.sr_twenty_two` on each driver |
+| `lead_type` | enum | ○ | — | — | — | `"exclusive"` or `"shared"`. Leads only. Whether this lead is sold to one buyer or multiple. Defaults to `"shared"` if omitted — send `"exclusive"` for higher bids |
 | `dial_in_phone` | string (10 digits) | — | — | — | ✅ | Calls only. The caller ID we use to match the incoming call to your bid |
 
 ### Compliance & Consent
@@ -962,6 +965,7 @@ interface LeadPingRequest {
   tcpa_language?: string;
   tcpa_json?: string;
   leadid_token?: string;
+  lead_type?: "exclusive" | "shared"; // defaults to "shared" if omitted
   drivers: LeadPingDriver[]; // required, 1–6
   vehicles: LeadPingVehicle[]; // required, 1–6
 }
