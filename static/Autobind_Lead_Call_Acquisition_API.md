@@ -467,7 +467,7 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 | `months_at_address` | number | ○ | — | ○ | — | Months at current address. Convert years to months (e.g. 3 years = `36`) |
 | `current_company` | enum | ○ | — | ○ | — | Currently insured policyholder's insurance company: `"Allstate"` `"Geico"` `"Progressive"` ... see TypeScript types |
 | `current_company_tenure_months` | number | ○ | — | ○ | — | Months with current insurer. Convert years to months (e.g. 3 years = `36`) |
-| `current_policy_expires` | string | ○ | — | ○ | — | `YYYY-MM-DD` |
+| `current_policy_expires` | string | ○ | — | ○ | — | `YYYY-MM-DD`. Must be today or later, and no more than 1 year in the future |
 | `current_bi_per_person` | number | ○ | — | ○ | — | Current bodily injury limit per person in dollars, e.g. `30000` |
 | `current_bi_per_accident` | number | ○ | — | ○ | — | Current bodily injury limit per accident in dollars, e.g. `60000` |
 | `continuous_insurance_duration` | enum | ○ | — | ○ | — | How long continuously insured: `"less_than_6_months"` `"6_months_to_1_year"` `"1_to_2_years"` `"2_to_5_years"` `"5_plus_years"` |
@@ -801,6 +801,7 @@ All phone fields: exactly 10 digits, numeric only. No dashes, spaces, parenthese
 ### Dates
 - `YYYY-MM-DD`: `birth_date`, `incident_date`, `first_licensed_date`, `current_policy_expires`, `policy_start_date`, `vehicle_purchase_date`
 - `YYYY-MM-DDTHH:mm:ssZ`: `lead_created_at`
+- `current_policy_expires` must be today or later, and no more than 1 year in the future
 
 ### State codes
 - `state_abbreviation`, `license_plate_state`: 2 uppercase letters — `"TX"` not `"tx"` or `"Texas"`

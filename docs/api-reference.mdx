@@ -458,7 +458,7 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 <tr><td><code>months_at_address</code></td><td>number</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Months at current address. Convert years to months (e.g. 3 years = <code>36</code>)</td></tr>
 <tr><td><code>current_company</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Currently insured policyholder's insurance company: <code>"Allstate"</code> <code>"Geico"</code> <code>"Progressive"</code> ... see TypeScript types</td></tr>
 <tr><td><code>current_company_tenure_months</code></td><td>number</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Months with current insurer. Convert years to months (e.g. 3 years = <code>36</code>)</td></tr>
-<tr><td><code>current_policy_expires</code></td><td>string</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>YYYY-MM-DD</code></td></tr>
+<tr><td><code>current_policy_expires</code></td><td>string</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>YYYY-MM-DD</code>. Must be today or later, and no more than 1 year in the future</td></tr>
 <tr><td><code>current_bi_per_person</code></td><td>number</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Current bodily injury limit per person in dollars, e.g. <code>30000</code></td></tr>
 <tr><td><code>current_bi_per_accident</code></td><td>number</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Current bodily injury limit per accident in dollars, e.g. <code>60000</code></td></tr>
 <tr><td><code>continuous_insurance_duration</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>How long continuously insured: <code>"less_than_6_months"</code> <code>"6_months_to_1_year"</code> <code>"1_to_2_years"</code> <code>"2_to_5_years"</code> <code>"5_plus_years"</code></td></tr>
@@ -787,6 +787,7 @@ All phone fields: exactly 10 digits, numeric only. No dashes, spaces, parenthese
 ### Dates
 - `YYYY-MM-DD`: `birth_date`, `incident_date`, `first_licensed_date`, `current_policy_expires`, `policy_start_date`, `vehicle_purchase_date`
 - `YYYY-MM-DDTHH:mm:ssZ`: `lead_created_at`
+- `current_policy_expires` must be today or later, and no more than 1 year in the future
 
 ### State codes
 - `state_abbreviation`, `license_plate_state`: 2 uppercase letters — `"TX"` not `"tx"` or `"Texas"`
