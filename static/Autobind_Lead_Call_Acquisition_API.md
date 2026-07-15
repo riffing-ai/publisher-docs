@@ -441,7 +441,7 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 | `sub_id` | string (30) | ○ | — | ○ | — | Sub-affiliate tracking ID. Alphanumeric, hyphens, underscores |
 | `campaign_name` | string (100) | ✅ | — | ○ | — |  |
 | `media_source` | string | ○ | — | ○ | — | `"Google"`, `"Facebook"`, etc. |
-| `traffic_channel` | enum | ○ | — | ○ | — | `"cpc"` `"organic"` `"display"` `"social"` `"email"` |
+| `traffic_channel` | enum | ○ | — | ○ | — | `"cpc"` `"organic"` `"display"` `"social"` `"email"` `"search"` |
 | `placement_type` | enum | ○ | — | ○ | — | `"thank_you_page"` `"early_exit"` `"form_page"` |
 | `landing_page` | string (500) | ○ | — | ○ | — | URL consumer came from |
 | `search_keyword` | string | ○ | — | ○ | — |  |
@@ -869,7 +869,7 @@ Copy this block into your project. All request and response shapes are defined h
 ```typescript
 // ── Shared ──
 
-type TrafficChannel = "cpc" | "organic" | "display" | "social" | "email";
+type TrafficChannel = "cpc" | "organic" | "display" | "social" | "email" | "search";
 type PlacementType = "thank_you_page" | "early_exit" | "form_page";
 type Language = "en" | "es";
 
