@@ -481,7 +481,7 @@ All ping and post fields in one table. ✅ = required, ◐ = conditionally requi
 | `campaign_name` | string (100) | ✅ | — | ○ | — |  |
 | `media_source` | string | ○ | — | ○ | — | The **platform** the media was bought on — not the channel type. Free text, so the long tail is covered: `"google"` `"bing"` `"facebook"` `"instagram"` `"tiktok"` `"youtube"` `"snapchat"` `"reddit"` `"pinterest"` `"taboola"` `"outbrain"` `"yahoo"`. **Lowercased on receipt**, so `"Google"` and `"google"` are one source rather than two rows in your reports. Send `traffic_channel` alongside it — `media_source: "google"` with `traffic_channel: "sem"` says something `media_source` alone can't |
 | `traffic_channel` | enum | ○ | — | ○ | — | `"sem"` paid search · `"organic_search"` unpaid search · `"display"` · `"native"` content-recommendation widgets (Taboola, Outbrain) · `"video"` YouTube, CTV, pre-roll · `"social"` · `"email"` · `"sms"` · `"contextual"` contextual-targeted media · `"other"` a channel you can identify that isn't listed here — use this rather than leaving the field empty.<br/>Google campaign types that span channels (Performance Max, Demand Gen) aren't channels: send the dominant channel, or `"other"` if genuinely mixed. Don't send `"affiliate"` here — that's an origin, see `source_type`.<br/>*Still accepted, mapped automatically:* `"cpc"` and `"search"` → `"sem"`, `"organic"` → `"organic_search"` |
-| `placement_type` | enum | ○ | — | ○ | — | `"thank_you_page"` `"early_exit"` `"form_page"` |
+| `placement_type` | enum | ○ | — | ○ | — | `"thank_you_page"` `"leave_behind"` `"form_page"` |
 | `landing_page` | string (500) | ○ | — | ○ | — | URL consumer came from |
 | `search_keyword` | string | ○ | — | ○ | — |  |
 
@@ -914,7 +914,7 @@ type TrafficChannel =
   // Retired spellings, still accepted and mapped on arrival:
   | "cpc" | "search"    // → "sem"
   | "organic";          // → "organic_search"
-type PlacementType = "thank_you_page" | "early_exit" | "form_page";
+type PlacementType = "thank_you_page" | "leave_behind" | "form_page";
 type SourceType = "direct" | "affiliate";
 type Language = "en" | "es";
 
