@@ -480,7 +480,7 @@ All ping and post fields in one table. ✅ = required, ◐ = conditionally requi
 | `sub_id` | string (30) | ○ | — | ○ | — | **Deprecated** — use `affiliate_id` to identify a business. Still accepted, and still useful for its original purpose: an opaque path, creative, or placement token within one source. Alphanumeric, hyphens, underscores |
 | `campaign_name` | string (100) | ✅ | — | ○ | — |  |
 | `media_source` | string | ○ | — | ○ | — | `"Google"`, `"Facebook"`, etc. Free text — prefer `traffic_channel`, which we can act on |
-| `traffic_channel` | enum | ○ | — | ○ | — | `"sem"` paid search · `"organic_search"` unpaid search · `"display"` · `"social"` · `"email"` · `"sms"` · `"contextual"` contextual-targeted media. *Still accepted, mapped automatically:* `"cpc"` and `"search"` → `"sem"`, `"organic"` → `"organic_search"` |
+| `traffic_channel` | enum | ○ | — | ○ | — | `"sem"` paid search · `"organic_search"` unpaid search · `"display"` · `"native"` content-recommendation widgets (Taboola, Outbrain) · `"video"` YouTube, CTV, pre-roll · `"social"` · `"email"` · `"sms"` · `"contextual"` contextual-targeted media · `"other"` a channel you can identify that isn't listed here — use this rather than leaving the field empty.<br/>Google campaign types that span channels (Performance Max, Demand Gen) aren't channels: send the dominant channel, or `"other"` if genuinely mixed. Don't send `"affiliate"` here — that's an origin, see `source_type`.<br/>*Still accepted, mapped automatically:* `"cpc"` and `"search"` → `"sem"`, `"organic"` → `"organic_search"` |
 | `placement_type` | enum | ○ | — | ○ | — | `"thank_you_page"` `"early_exit"` `"form_page"` |
 | `landing_page` | string (500) | ○ | — | ○ | — | URL consumer came from |
 | `search_keyword` | string | ○ | — | ○ | — |  |
@@ -909,7 +909,8 @@ Copy this block into your project. All request and response shapes are defined h
 // ── Shared ──
 
 type TrafficChannel =
-  | "sem" | "organic_search" | "display" | "social" | "email" | "sms" | "contextual"
+  | "sem" | "organic_search" | "display" | "native" | "video"
+  | "social" | "email" | "sms" | "contextual" | "other"
   // Retired spellings, still accepted and mapped on arrival:
   | "cpc" | "search"    // → "sem"
   | "organic";          // → "organic_search"
