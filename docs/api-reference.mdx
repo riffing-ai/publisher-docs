@@ -1038,8 +1038,7 @@ interface LeadPostDriver {
 interface LeadPostRequest {
   media_type: "lead";
   bid_id: string;
-  trusted_form_cert_url?: string;
-  safebind_cert_url?: string; // Proof of consent — this OR safebind_cert_url, on ping or post
+  trusted_form_cert_url?: string; // Proof of consent — this OR safebind_cert_url, ping or post
   safebind_cert_url?: string;     // SafeBind alternative: https://api.safebind.ai/c/<token>
   tcpa_language?: string;
   tcpa_json?: string;
