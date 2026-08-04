@@ -784,9 +784,19 @@ Give up.
 
 | Endpoint | Recommended timeout |
 |----------|-------------------|
-| Ping | 2 seconds |
-| Post | 15 seconds |
+| Ping | 3 seconds |
+| Post | 45 seconds |
 | Status | 5 seconds |
+
+:::warning Do not set the post timeout below 45 seconds
+The post verifies your consent proof with the provider you sent — a network call to ActiveProspect or SafeBind, which retries once on a transient failure. In the worst case that takes about 30 seconds.
+
+The previously documented 15 seconds was **shorter than the work the endpoint does**. If you time out early and re-post, we may still be verifying the first attempt, and you can end up posting the same lead twice.
+
+The post is idempotent on `bid_id` — the same `bid_id` always returns the same result — so a retry after a genuine timeout is safe. But the correct fix is the longer timeout, not more retries.
+:::
+
+The **ping** moved from 2s to 3s for a smaller reason: when your ping carries a consent-proof URL we now check that the certificate exists before bidding, which is a free call to your provider capped at 1.5 seconds. If it can't answer in time we bid anyway — the check never costs you a bid — but the ping itself can take marginally longer than it used to.
 
 ---
 
