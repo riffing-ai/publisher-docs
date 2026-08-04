@@ -7,7 +7,7 @@
 
 **Lead ping:** `media_type`, `campaign_name`, `ip_address`, `user_agent`, `lead_created_at`, `state_abbreviation`, `zip`, `currently_insured`, `sr_twenty_two`, `home_ownership`, `drivers[].gender`, `drivers[].marital_status`, `drivers[].license_status`, `drivers[]{birth_date or age}`, `vehicles[].year`, `vehicles[].make`, `vehicles[].model`, `vehicles[].commercial_use`
 
-**Lead post:** `media_type`, `bid_id`, `trusted_form_cert_url` (if not on ping), `first_name`, `last_name`, `contact_phone`, `email`, `street_address`, `city`, `drivers[].first_name`, `drivers[].last_name`, `drivers[].relationship_to_policyholder`
+**Lead post:** `media_type`, `bid_id`, `trusted_form_cert_url` or `safebind_cert_url` (if not on ping), `first_name`, `last_name`, `contact_phone`, `email`, `street_address`, `city`, `drivers[].first_name`, `drivers[].last_name`, `drivers[].relationship_to_policyholder`
 
 **Call ping:** `media_type`, `state_abbreviation`, `currently_insured`, `language`
 
@@ -110,7 +110,7 @@ curl -X POST https://api.autobind.ai/leads/post \
 
 ## How It Works
 
-> **Ping = bid parameters. Post = PII.** All demographic, insurance, driver, vehicle, and incident data is sent on the **ping** — these are the parameters we use to calculate your bid. The **post** contains only personally identifiable information (names, phones, email, address) and driver identity. Compliance proof (`trusted_form_cert_url`) can be sent on either request, but we strongly recommend including it on the ping — it's available at form fill time and lets us validate consent before you send PII.
+> **Ping = bid parameters. Post = PII.** All demographic, insurance, driver, vehicle, and incident data is sent on the **ping** — these are the parameters we use to calculate your bid. The **post** contains only personally identifiable information (names, phones, email, address) and driver identity. Compliance proof (`trusted_form_cert_url` **or** `safebind_cert_url`) can be sent on either request, but we strongly recommend including it on the ping — it's available at form fill time and lets us validate consent before you send PII.
 
 ### Lead Flow
 
@@ -379,16 +379,23 @@ Once accepted, transfer the consumer to the `transfer_phone` returned in the pin
 | `bid_expired` | Bid has expired (leads: 90s, calls: 60s) |
 | `duplicate_phone` | Phone number seen in last 30 days (leads) |
 | `duplicate_call` | Same phone had a billable call from your account in the last hour (calls) |
-| `missing_consent_proof` | `trusted_form_cert_url` is missing (leads only) |
+| `missing_consent_proof` | No proof of consent — neither `trusted_form_cert_url` nor `safebind_cert_url` (leads only) |
 | `failed_secondary_evaluation` | Lead data failed our evaluation (leads only) |
 
 ---
 
 ## Compliance Proof
 
-`trusted_form_cert_url` is required for all leads — it can be sent on either the **ping** or the **post** (not both needed). This is a [TrustedForm](https://activeprospect.com/trustedform/) certificate URL from ActiveProspect that proves the consumer consented on your form. Leads missing it on both requests are rejected with `"missing_consent_proof"`.
+**Proof of consent is required for all leads.** Send **one** of these — on either the **ping** or the **post** (not both requests needed):
 
-We strongly recommend sending `trusted_form_cert_url` (and all compliance fields) on the **ping**. The TrustedForm certificate is generated at form fill time, before you have PII — so it's available when you ping. Sending it early means your post only needs `bid_id`, PII, and driver identity.
+- `trusted_form_cert_url` — a [TrustedForm](https://activeprospect.com/trustedform/) certificate URL from ActiveProspect.
+- `safebind_cert_url` — a [SafeBind](https://safebind.ai) proof-of-consent URL, in the form `https://api.safebind.ai/c/<token>`.
+
+Either proves the consumer consented on your form. Leads carrying neither are rejected with `"missing_consent_proof"`.
+
+**Send one, not both.** If you send both we verify the TrustedForm certificate and ignore the SafeBind URL — we don't pay two providers to answer the same question. Pick whichever you already capture.
+
+We strongly recommend sending your consent proof (and all compliance fields) on the **ping**. Both providers generate their certificate at form fill time, before you have PII — so it's available when you ping. Sending it early means your post only needs `bid_id`, PII, and driver identity.
 
 ---
 
@@ -459,7 +466,8 @@ All ping and post fields in one table. ✅ = required, ◐ = conditionally requi
 
 | Field | Type | Lead Ping | Lead Post | Call Ping | Call Post | Description |
 |-------|------|-----------|-----------|-----------|-----------|-------------|
-| `trusted_form_cert_url` | string (500) | ○ | ○ | ○ | ○ | **Required for leads** — send on ping or post (ping strongly recommended). TrustedForm cert URL proving consumer consent |
+| `trusted_form_cert_url` | string (500) | ○ | ○ | ○ | ○ | **Proof of consent — required for leads** (this *or* `safebind_cert_url`) — send on ping or post (ping strongly recommended). TrustedForm cert URL proving consumer consent |
+| `safebind_cert_url` | string (500) | ○ | ○ | ○ | ○ | **Alternative to `trusted_form_cert_url`** — SafeBind proof-of-consent URL (`https://api.safebind.ai/c/<token>`). Send one provider or the other; if both arrive we verify the TrustedForm cert and ignore this |
 | `tcpa_language` | string (2000) | ○ | ○ | ○ | ○ | TCPA consent text shown on the form. We encourage sending this on the ping |
 | `tcpa_json` | string (5000) | ○ | ○ | ○ | ○ | Structured TCPA consent data (includes consumer IP, timestamp). We encourage sending this on the ping |
 | `leadid_token` | string | ○ | ○ | ○ | ○ | Jornaya LeadiD token. We encourage sending this on the ping |
@@ -831,9 +839,13 @@ Give up.
 
 | Endpoint | Recommended timeout |
 |----------|-------------------|
-| Ping | 2 seconds |
-| Post | 15 seconds |
+| Ping | 3 seconds |
+| Post | 45 seconds |
 | Status | 5 seconds |
+
+> ⚠️ **Do not set the post timeout below 45 seconds.** The post verifies your consent proof with the provider you sent — a network call to ActiveProspect or SafeBind, which retries once on a transient failure. In the worst case that takes about 30 seconds. The previously documented 15 seconds was **shorter than the work the endpoint does**: if you time out early and re-post, we may still be verifying the first attempt, and you can end up posting the same lead twice. The post is idempotent on `bid_id` — the same `bid_id` always returns the same result — so a retry after a genuine timeout is safe. But the correct fix is the longer timeout, not more retries.
+
+The **ping** moved from 2s to 3s for a smaller reason: when your ping carries a consent-proof URL we now check that the certificate exists before bidding, which is a free call to your provider capped at 1.5 seconds. If it can't answer in time we bid anyway — the check never costs you a bid — but the ping itself can take marginally longer than it used to.
 
 ---
 
@@ -870,7 +882,7 @@ If provided, exactly 17 characters.
 
 ### Critical rules
 - `drivers[0].relationship_to_policyholder` must be `"self"` on lead posts
-- `trusted_form_cert_url` (TrustedForm by ActiveProspect) is **required** — on the ping or the post (ping recommended)
+- Proof of consent is **required** — `trusted_form_cert_url` (TrustedForm by ActiveProspect) **or** `safebind_cert_url` (SafeBind), on the ping or the post (ping recommended)
 - Unknown fields are silently stripped and returned as `warnings` in the response (not rejected)
 
 ---
@@ -983,6 +995,7 @@ interface CallPingRequest {
   credit_status?: CreditStatus;
   residence_type?: ResidenceType;
   trusted_form_cert_url?: string;
+  safebind_cert_url?: string;
   tcpa_language?: string;
   tcpa_json?: string;
   leadid_token?: string;
@@ -1015,6 +1028,7 @@ interface LeadPingRequest {
   residence_type?: ResidenceType;
   language?: Language;
   trusted_form_cert_url?: string;
+  safebind_cert_url?: string;
   tcpa_language?: string;
   tcpa_json?: string;
   leadid_token?: string;
@@ -1063,6 +1077,7 @@ interface CallPostRequest {
   dial_in_phone: string; // 10 digits
   language?: Language;
   trusted_form_cert_url?: string;
+  safebind_cert_url?: string;
   tcpa_language?: string;
   tcpa_json?: string;
   leadid_token?: string;
@@ -1094,7 +1109,8 @@ interface LeadPostDriver {
 interface LeadPostRequest {
   media_type: "lead";
   bid_id: string;
-  trusted_form_cert_url?: string; // Required for leads — send on ping or post (not both needed)
+  trusted_form_cert_url?: string; // Proof of consent — this OR safebind_cert_url, ping or post
+  safebind_cert_url?: string;     // SafeBind alternative: https://api.safebind.ai/c/<token>
   tcpa_language?: string;
   tcpa_json?: string;
   leadid_token?: string;
