@@ -399,11 +399,13 @@ We strongly recommend sending `trusted_form_cert_url` (and all compliance fields
 | Value | Meaning | What else to send |
 |-------|---------|-------------------|
 | `"direct"` | You generated this lead yourself, on media you own and operate. | Nothing further — leave the affiliate fields out entirely. |
-| `"affiliate"` | Someone other than you generated it — an affiliate, sub-publisher, network, or another marketplace you sourced it from. | `affiliate_id` and `affiliate_name` identifying that business. |
+| `"affiliate"` | Someone other than you generated it — an affiliate, sub-publisher, network, or another marketplace you sourced it from. | `affiliate_name` — the name of that business. `affiliate_id` is optional. |
 
 **If the lead is direct, you do not need to fill in `affiliate_id` or `affiliate_name`.** Send `source_type: "direct"` and stop there.
 
-`affiliate_id` should be **stable over time** — the same business gets the same ID on every ping — so its performance can be measured across weeks. It can be whatever internal identifier you already use; it means nothing to us beyond being consistent. `affiliate_name` is the business's actual name (legal or DBA), which is what lets us discuss specific sources with you and trace a consent complaint back to its origin.
+`affiliate_name` is the business's actual name (legal or DBA). It is the field that matters: it lets us discuss specific sources with you and trace a consent complaint back to its origin, which an opaque identifier cannot.
+
+`affiliate_id` is **optional**. Send it if you already have an internal identifier for that business and it is **stable over time** — the same business getting the same ID on every ping lets us measure a source's performance across weeks even if its name is spelled inconsistently. If you don't have one, omit it; the name alone is enough.
 
 ```jsonc
 // Direct — you generated the lead. No affiliate fields.
@@ -424,7 +426,7 @@ We strongly recommend sending `trusted_form_cert_url` (and all compliance fields
 }
 ```
 
-> `source_type` is optional today and we do not reject pings that omit it. It is becoming a required field — populate it now so nothing changes for you later. If you send `source_type: "affiliate"` without `affiliate_id` and `affiliate_name`, the lead is still accepted, but it counts as unattributed traffic.
+> `source_type` is optional today and we do not reject pings that omit it. It is becoming a required field — populate it now so nothing changes for you later. If you send `source_type: "affiliate"` without `affiliate_name`, the lead is still accepted, but it counts as unattributed traffic.
 
 ---
 
@@ -475,8 +477,8 @@ All ping and post fields in one table. ✅ = required, ◐ = conditionally requi
 | Field | Type | Lead Ping | Lead Post | Call Ping | Call Post | Description |
 |-------|------|-----------|-----------|-----------|-----------|-------------|
 | `source_type` | enum | ○ | — | ○ | — | `"direct"` = you generated this lead on media you own and operate. `"affiliate"` = a third party generated it (affiliate, sub-publisher, network, or another marketplace). See [Lead Origin](#lead-origin). Becoming required |
-| `affiliate_id` | string (64) | ◐ | — | ◐ | — | **Required when `source_type` is `"affiliate"`; omit when `"direct"`.** Your stable identifier for the business that generated the lead — the same business must get the same ID every time |
-| `affiliate_name` | string (128) | ◐ | — | ◐ | — | **Required when `source_type` is `"affiliate"`; omit when `"direct"`.** That business's legal or DBA name, e.g. `"Example Quotes LLC"` |
+| `affiliate_name` | string (128) | ◐ | — | ◐ | — | **Required when `source_type` is `"affiliate"`; omit when `"direct"`.** The name of the business that generated the lead — legal or DBA, e.g. `"Example Quotes LLC"` |
+| `affiliate_id` | string (64) | ○ | — | ○ | — | Optional. Your internal identifier for that same business. Send it only if it is stable — the same business getting the same ID every time is what makes it useful |
 | `sub_id` | string (30) | ○ | — | ○ | — | **Deprecated** — use `affiliate_id` to identify a business. Still accepted, and still useful for its original purpose: an opaque path, creative, or placement token within one source. Alphanumeric, hyphens, underscores |
 | `campaign_name` | string (100) | ✅ | — | ○ | — |  |
 | `media_source` | string | ○ | — | ○ | — | The **platform** the media was bought on — not the channel type. Free text, so the long tail is covered: `"google"` `"bing"` `"facebook"` `"instagram"` `"tiktok"` `"youtube"` `"snapchat"` `"reddit"` `"pinterest"` `"taboola"` `"outbrain"` `"yahoo"`. **Lowercased on receipt**, so `"Google"` and `"google"` are one source rather than two rows in your reports. Send `traffic_channel` alongside it — `media_source: "google"` with `traffic_channel: "sem"` says something `media_source` alone can't |
