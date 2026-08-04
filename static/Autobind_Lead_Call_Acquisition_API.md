@@ -822,7 +822,7 @@ Safe to retry (see Retry section).
 | Endpoint | Idempotent | Retry on |
 |----------|------------|----------|
 | `POST /leads/ping` | Yes (no side effects) | 429, 500, timeout |
-| `POST /leads/post` | Yes (same `bid_id` returns same result) | 500, timeout |
+| `POST /leads/post` | Yes (one request processes; a retry gets `202 processing` mid-flight, then the final result replays) | 500, timeout |
 | `GET /leads/status/:id` | Yes (read-only) | 429, 500, timeout |
 
 **Do NOT retry on:** 400 (fix your payload), 401 (fix your API key), 200 with `"rejected"` (the lead was evaluated and rejected — retrying won't change the result).
