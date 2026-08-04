@@ -843,7 +843,9 @@ Give up.
 | Post | 45 seconds |
 | Status | 5 seconds |
 
-> ⚠️ **Do not set the post timeout below 45 seconds.** The post verifies your consent proof with the provider you sent — a network call to ActiveProspect or SafeBind, which retries once on a transient failure. In the worst case that takes about 30 seconds. The previously documented 15 seconds was **shorter than the work the endpoint does**: if you time out early and re-post, we may still be verifying the first attempt, and you can end up posting the same lead twice. The post is idempotent on `bid_id` — the same `bid_id` always returns the same result — so a retry after a genuine timeout is safe. But the correct fix is the longer timeout, not more retries.
+> ⚠️ **Do not set the post timeout below 45 seconds.** The post verifies your consent proof with the provider you sent — a network call to ActiveProspect or SafeBind, which retries once on a transient failure. In the worst case that takes about 30 seconds. The previously documented 15 seconds was **shorter than the work the endpoint does**.
+>
+> **What a retry actually gets, precisely.** Exactly one request processes a `bid_id`. If you retry while the first request is still verifying, you get **HTTP 202** `{"status": "processing", "retry_after_seconds": 10}` — not a verdict, and never a contradictory one. Wait and retry: once the first request finishes, the same `bid_id` replays its final `accepted`/`rejected` result. A retry is therefore safe — it can never double-process your lead or return a verdict that later flips — but it cannot make the answer arrive faster, so the correct fix is the longer timeout, not more retries. Treat `processing` as "keep waiting", never as a rejection.
 
 The **ping** moved from 2s to 3s for a smaller reason: when your ping carries a consent-proof URL we now check that the certificate exists before bidding, which is a free call to your provider capped at 1.5 seconds. If it can't answer in time we bid anyway — the check never costs you a bid — but the ping itself can take marginally longer than it used to.
 
