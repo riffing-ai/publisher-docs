@@ -392,9 +392,45 @@ We strongly recommend sending `trusted_form_cert_url` (and all compliance fields
 
 ---
 
+## Lead Origin
+
+`source_type` tells us **who generated the lead**. It takes one of two values:
+
+| Value | Meaning | What else to send |
+|-------|---------|-------------------|
+| `"direct"` | You generated this lead yourself, on media you own and operate. | Nothing further — leave the affiliate fields out entirely. |
+| `"affiliate"` | Someone other than you generated it — an affiliate, sub-publisher, network, or another marketplace you sourced it from. | `affiliate_id` and `affiliate_name` identifying that business. |
+
+**If the lead is direct, you do not need to fill in `affiliate_id` or `affiliate_name`.** Send `source_type: "direct"` and stop there.
+
+`affiliate_id` should be **stable over time** — the same business gets the same ID on every ping — so its performance can be measured across weeks. It can be whatever internal identifier you already use; it means nothing to us beyond being consistent. `affiliate_name` is the business's actual name (legal or DBA), which is what lets us discuss specific sources with you and trace a consent complaint back to its origin.
+
+```jsonc
+// Direct — you generated the lead. No affiliate fields.
+{
+  "source_type": "direct",
+  "landing_page": "https://example.com/auto-quotes",
+  "traffic_channel": "cpc"
+}
+
+// Affiliate — someone else generated it. Identify them.
+{
+  "source_type": "affiliate",
+  "affiliate_id": "PUB-4471",
+  "affiliate_name": "Example Quotes LLC",
+  "landing_page": "https://examplequotes.com/auto",
+  "traffic_channel": "cpc",
+  "sub_id": "fb-retarget-03"
+}
+```
+
+> `source_type` is optional today and we do not reject pings that omit it. It is becoming a required field — populate it now so nothing changes for you later. If you send `source_type: "affiliate"` without `affiliate_id` and `affiliate_name`, the lead is still accepted, but it counts as unattributed traffic.
+
+---
+
 ## Field Reference
 
-All ping and post fields in one table. ✅ = required, ○ = optional, — = not applicable.
+All ping and post fields in one table. ✅ = required, ◐ = conditionally required (the Description gives the condition), ○ = optional, — = not applicable.
 
 > See the key principle above: **ping = bid parameters (+ compliance), post = PII.**
 
@@ -438,10 +474,13 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 
 | Field | Type | Lead Ping | Lead Post | Call Ping | Call Post | Description |
 |-------|------|-----------|-----------|-----------|-----------|-------------|
-| `sub_id` | string (30) | ○ | — | ○ | — | Sub-affiliate tracking ID. Alphanumeric, hyphens, underscores |
+| `source_type` | enum | ○ | — | ○ | — | `"direct"` = you generated this lead on media you own and operate. `"affiliate"` = a third party generated it (affiliate, sub-publisher, network, or another marketplace). See [Lead Origin](#lead-origin). Becoming required |
+| `affiliate_id` | string (64) | ◐ | — | ◐ | — | **Required when `source_type` is `"affiliate"`; omit when `"direct"`.** Your stable identifier for the business that generated the lead — the same business must get the same ID every time |
+| `affiliate_name` | string (128) | ◐ | — | ◐ | — | **Required when `source_type` is `"affiliate"`; omit when `"direct"`.** That business's legal or DBA name, e.g. `"Example Quotes LLC"` |
+| `sub_id` | string (30) | ○ | — | ○ | — | **Deprecated** — use `affiliate_id` to identify a business. Still accepted, and still useful for its original purpose: an opaque path, creative, or placement token within one source. Alphanumeric, hyphens, underscores |
 | `campaign_name` | string (100) | ✅ | — | ○ | — |  |
-| `media_source` | string | ○ | — | ○ | — | `"Google"`, `"Facebook"`, etc. |
-| `traffic_channel` | enum | ○ | — | ○ | — | `"cpc"` `"organic"` `"display"` `"social"` `"email"` `"search"` |
+| `media_source` | string | ○ | — | ○ | — | `"Google"`, `"Facebook"`, etc. Free text — prefer `traffic_channel`, which we can act on |
+| `traffic_channel` | enum | ○ | — | ○ | — | `"sem"` paid search · `"organic_search"` unpaid search · `"display"` · `"social"` · `"email"` · `"sms"` · `"contextual"` contextual-targeted media. *Still accepted, mapped automatically:* `"cpc"` and `"search"` → `"sem"`, `"organic"` → `"organic_search"` |
 | `placement_type` | enum | ○ | — | ○ | — | `"thank_you_page"` `"early_exit"` `"form_page"` |
 | `landing_page` | string (500) | ○ | — | ○ | — | URL consumer came from |
 | `search_keyword` | string | ○ | — | ○ | — |  |
@@ -869,8 +908,13 @@ Copy this block into your project. All request and response shapes are defined h
 ```typescript
 // ── Shared ──
 
-type TrafficChannel = "cpc" | "organic" | "display" | "social" | "email" | "search";
+type TrafficChannel =
+  | "sem" | "organic_search" | "display" | "social" | "email" | "sms" | "contextual"
+  // Retired spellings, still accepted and mapped on arrival:
+  | "cpc" | "search"    // → "sem"
+  | "organic";          // → "organic_search"
 type PlacementType = "thank_you_page" | "early_exit" | "form_page";
+type SourceType = "direct" | "affiliate";
 type Language = "en" | "es";
 
 // ── Ping Requests ──
@@ -915,7 +959,10 @@ interface LeadPingVehicle extends PingVehicle {
 interface CallPingRequest {
   media_type: "call";
   external_id?: string;
-  sub_id?: string;
+  source_type?: SourceType;
+  affiliate_id?: string;   // required when source_type is "affiliate"
+  affiliate_name?: string; // required when source_type is "affiliate"
+  sub_id?: string;         // deprecated — use affiliate_id
   media_source?: string;
   traffic_channel?: TrafficChannel;
   campaign_name?: string;
@@ -943,7 +990,10 @@ interface CallPingRequest {
 interface LeadPingRequest {
   media_type: "lead";
   external_id?: string;
-  sub_id?: string;
+  source_type?: SourceType;
+  affiliate_id?: string;   // required when source_type is "affiliate"
+  affiliate_name?: string; // required when source_type is "affiliate"
+  sub_id?: string;         // deprecated — use affiliate_id
   media_source?: string;
   traffic_channel?: TrafficChannel;
   campaign_name: string; // required for leads

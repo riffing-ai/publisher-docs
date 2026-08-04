@@ -383,9 +383,45 @@ We strongly recommend sending `trusted_form_cert_url` (and all compliance fields
 
 ---
 
+## Lead Origin
+
+`source_type` tells us **who generated the lead**. It takes one of two values:
+
+| Value | Meaning | What else to send |
+|-------|---------|-------------------|
+| `"direct"` | You generated this lead yourself, on media you own and operate. | Nothing further — leave the affiliate fields out entirely. |
+| `"affiliate"` | Someone other than you generated it — an affiliate, sub-publisher, network, or another marketplace you sourced it from. | `affiliate_id` and `affiliate_name` identifying that business. |
+
+**If the lead is direct, you do not need to fill in `affiliate_id` or `affiliate_name`.** Send `source_type: "direct"` and stop there.
+
+`affiliate_id` should be **stable over time** — the same business gets the same ID on every ping — so its performance can be measured across weeks. It can be whatever internal identifier you already use; it means nothing to us beyond being consistent. `affiliate_name` is the business's actual name (legal or DBA), which is what lets us discuss specific sources with you and trace a consent complaint back to its origin.
+
+```jsonc
+// Direct — you generated the lead. No affiliate fields.
+{
+  "source_type": "direct",
+  "landing_page": "https://example.com/auto-quotes",
+  "traffic_channel": "cpc"
+}
+
+// Affiliate — someone else generated it. Identify them.
+{
+  "source_type": "affiliate",
+  "affiliate_id": "PUB-4471",
+  "affiliate_name": "Example Quotes LLC",
+  "landing_page": "https://examplequotes.com/auto",
+  "traffic_channel": "cpc",
+  "sub_id": "fb-retarget-03"
+}
+```
+
+> `source_type` is optional today and we do not reject pings that omit it. It is becoming a required field — populate it now so nothing changes for you later. If you send `source_type: "affiliate"` without `affiliate_id` and `affiliate_name`, the lead is still accepted, but it counts as unattributed traffic.
+
+---
+
 ## Field Reference
 
-All ping and post fields in one table. ✅ = required, ○ = optional, — = not applicable.
+All ping and post fields in one table. ✅ = required, ◐ = conditionally required (the Description gives the condition), ○ = optional, — = not applicable.
 
 > See the key principle above: **ping = bid parameters (+ compliance), post = PII.**
 
@@ -435,10 +471,13 @@ All ping and post fields in one table. ✅ = required, ○ = optional, — = not
 <tr><td><code>lead_created_at</code></td><td>timestamp</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>YYYY-MM-DDTHH:mm:ssZ</code>. For calls originated from a form, include the timestamp of the original form fill</td></tr>
 
 <tr style={{background: "#1a1a2e", color: "white"}}><td colSpan="2" style={{fontWeight: "bold", padding: "6px 12px"}}>Traffic &amp; Campaign</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Lead<br/>Ping</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Lead<br/>Post</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Call<br/>Ping</td><td style={{textAlign: "center", fontSize: "11px", padding: "4px"}}>Call<br/>Post</td><td></td></tr>
-<tr><td><code>sub_id</code></td><td>string (30)</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>Sub-affiliate tracking ID. Alphanumeric, hyphens, underscores</td></tr>
+<tr><td><code>source_type</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>"direct"</code> = you generated this lead on media you own and operate. <code>"affiliate"</code> = a third party generated it (affiliate, sub-publisher, network, or another marketplace). See <a href="#lead-origin">Lead Origin</a>. Becoming required</td></tr>
+<tr><td><code>affiliate_id</code></td><td>string (64)</td><td style={{textAlign: 'center'}}>◐</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>◐</td><td style={{textAlign: 'center'}}>—</td><td><strong>Required when <code>source_type</code> is <code>"affiliate"</code>; omit when <code>"direct"</code>.</strong> Your stable identifier for the business that generated the lead — the same business must get the same ID every time</td></tr>
+<tr><td><code>affiliate_name</code></td><td>string (128)</td><td style={{textAlign: 'center'}}>◐</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>◐</td><td style={{textAlign: 'center'}}>—</td><td><strong>Required when <code>source_type</code> is <code>"affiliate"</code>; omit when <code>"direct"</code>.</strong> That business's legal or DBA name, e.g. <code>"Example Quotes LLC"</code></td></tr>
+<tr><td><code>sub_id</code></td><td>string (30)</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><strong>Deprecated</strong> — use <code>affiliate_id</code> to identify a business. Still accepted, and still useful for its original purpose: an opaque path, creative, or placement token within one source. Alphanumeric, hyphens, underscores</td></tr>
 <tr><td><code>campaign_name</code></td><td>string (100)</td><td style={{textAlign: 'center'}}>✅</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td></td></tr>
-<tr><td><code>media_source</code></td><td>string</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>"Google"</code>, <code>"Facebook"</code>, etc.</td></tr>
-<tr><td><code>traffic_channel</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>"cpc"</code> <code>"organic"</code> <code>"display"</code> <code>"social"</code> <code>"email"</code> <code>"search"</code></td></tr>
+<tr><td><code>media_source</code></td><td>string</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>"Google"</code>, <code>"Facebook"</code>, etc. Free text — prefer <code>traffic_channel</code>, which we can act on</td></tr>
+<tr><td><code>traffic_channel</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>"sem"</code> paid search · <code>"organic_search"</code> unpaid search · <code>"display"</code> · <code>"social"</code> · <code>"email"</code> · <code>"sms"</code> · <code>"contextual"</code> contextual-targeted media.<br/><em>Still accepted, mapped automatically:</em> <code>"cpc"</code> and <code>"search"</code> → <code>"sem"</code>, <code>"organic"</code> → <code>"organic_search"</code></td></tr>
 <tr><td><code>placement_type</code></td><td>enum</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td><code>"thank_you_page"</code> <code>"early_exit"</code> <code>"form_page"</code></td></tr>
 <tr><td><code>landing_page</code></td><td>string (500)</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td>URL consumer came from</td></tr>
 <tr><td><code>search_keyword</code></td><td>string</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td style={{textAlign: 'center'}}>○</td><td style={{textAlign: 'center'}}>—</td><td></td></tr>
@@ -855,8 +894,13 @@ Copy this block into your project. All request and response shapes are defined h
 ```typescript
 // ── Shared ──
 
-type TrafficChannel = "cpc" | "organic" | "display" | "social" | "email" | "search";
+type TrafficChannel =
+  | "sem" | "organic_search" | "display" | "social" | "email" | "sms" | "contextual"
+  // Retired spellings, still accepted and mapped on arrival:
+  | "cpc" | "search"    // → "sem"
+  | "organic";          // → "organic_search"
 type PlacementType = "thank_you_page" | "early_exit" | "form_page";
+type SourceType = "direct" | "affiliate";
 type Language = "en" | "es";
 
 // ── Ping Requests ──
@@ -901,7 +945,10 @@ interface LeadPingVehicle extends PingVehicle {
 interface CallPingRequest {
   media_type: "call";
   external_id?: string;
-  sub_id?: string;
+  source_type?: SourceType;
+  affiliate_id?: string;   // required when source_type is "affiliate"
+  affiliate_name?: string; // required when source_type is "affiliate"
+  sub_id?: string;         // deprecated — use affiliate_id
   media_source?: string;
   traffic_channel?: TrafficChannel;
   campaign_name?: string;
@@ -929,7 +976,10 @@ interface CallPingRequest {
 interface LeadPingRequest {
   media_type: "lead";
   external_id?: string;
-  sub_id?: string;
+  source_type?: SourceType;
+  affiliate_id?: string;   // required when source_type is "affiliate"
+  affiliate_name?: string; // required when source_type is "affiliate"
+  sub_id?: string;         // deprecated — use affiliate_id
   media_source?: string;
   traffic_channel?: TrafficChannel;
   campaign_name: string; // required for leads
