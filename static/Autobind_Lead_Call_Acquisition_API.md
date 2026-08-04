@@ -412,7 +412,7 @@ We strongly recommend sending `trusted_form_cert_url` (and all compliance fields
 {
   "source_type": "direct",
   "landing_page": "https://example.com/auto-quotes",
-  "traffic_channel": "cpc"
+  "traffic_channel": "sem"
 }
 
 // Affiliate — someone else generated it. Identify them.
@@ -421,7 +421,7 @@ We strongly recommend sending `trusted_form_cert_url` (and all compliance fields
   "affiliate_id": "PUB-4471",
   "affiliate_name": "Example Quotes LLC",
   "landing_page": "https://examplequotes.com/auto",
-  "traffic_channel": "cpc",
+  "traffic_channel": "sem",
   "sub_id": "fb-retarget-03"
 }
 ```
@@ -963,7 +963,7 @@ interface CallPingRequest {
   media_type: "call";
   external_id?: string;
   source_type?: SourceType;
-  affiliate_id?: string;   // required when source_type is "affiliate"
+  affiliate_id?: string;   // optional — your stable internal ID for that business, if you have one
   affiliate_name?: string; // required when source_type is "affiliate"
   sub_id?: string;         // deprecated — use affiliate_id
   media_source?: string;
@@ -994,7 +994,7 @@ interface LeadPingRequest {
   media_type: "lead";
   external_id?: string;
   source_type?: SourceType;
-  affiliate_id?: string;   // required when source_type is "affiliate"
+  affiliate_id?: string;   // optional — your stable internal ID for that business, if you have one
   affiliate_name?: string; // required when source_type is "affiliate"
   sub_id?: string;         // deprecated — use affiliate_id
   media_source?: string;
