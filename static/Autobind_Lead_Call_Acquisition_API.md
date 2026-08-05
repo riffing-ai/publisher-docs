@@ -7,7 +7,7 @@
 
 **Lead ping:** `media_type`, `campaign_name`, `ip_address`, `user_agent`, `lead_created_at`, `state_abbreviation`, `zip`, `currently_insured`, `sr_twenty_two`, `home_ownership`, `drivers[].gender`, `drivers[].marital_status`, `drivers[].license_status`, `drivers[]{birth_date or age}`, `vehicles[].year`, `vehicles[].make`, `vehicles[].model`, `vehicles[].commercial_use`
 
-**Lead post:** `media_type`, `bid_id`, `trusted_form_cert_url` (if not on ping), `first_name`, `last_name`, `contact_phone`, `email`, `street_address`, `city`, `drivers[].first_name`, `drivers[].last_name`, `drivers[].relationship_to_policyholder`
+**Lead post:** `media_type`, `bid_id`, `trusted_form_cert_url` or `safebind_cert_url` (if not on ping), `first_name`, `last_name`, `contact_phone`, `email`, `street_address`, `city`, `drivers[].first_name`, `drivers[].last_name`, `drivers[].relationship_to_policyholder`
 
 **Call ping:** `media_type`, `state_abbreviation`, `currently_insured`, `language`
 
@@ -17,11 +17,11 @@
 
 # Autobind Lead & Call Acquisition API
 
-*Last updated: 2026-04-07*
+*Last updated: 2026-08-05.*
 
 ## Overview
 
-JSON API for submitting auto insurance leads and call transfers via ping-post. You ping with bid parameters (demographics, drivers, vehicles) to get a price, then post the consumer's PII if you accept our bid. Compliance proof (TrustedForm) can go on either request but we strongly recommend the ping.
+JSON API for submitting auto insurance leads and call transfers via ping-post. You ping with bid parameters (demographics, drivers, vehicles) to get a price, then post the consumer's PII if you accept our bid. Compliance proof (TrustedForm **or SafeBind**) can go on either request but we strongly recommend the ping.
 
 **Two media types:**
 - **`lead`** — Form-submitted consumer data. We buy the data.
@@ -110,7 +110,7 @@ curl -X POST https://api.autobind.ai/leads/post \
 
 ## How It Works
 
-> **Ping = bid parameters. Post = PII.** All demographic, insurance, driver, vehicle, and incident data is sent on the **ping** — these are the parameters we use to calculate your bid. The **post** contains only personally identifiable information (names, phones, email, address) and driver identity. Compliance proof (`trusted_form_cert_url`) can be sent on either request, but we strongly recommend including it on the ping — it's available at form fill time and lets us validate consent before you send PII.
+> **Ping = bid parameters. Post = PII.** All demographic, insurance, driver, vehicle, and incident data is sent on the **ping** — these are the parameters we use to calculate your bid. The **post** contains only personally identifiable information (names, phones, email, address) and driver identity. Compliance proof (`trusted_form_cert_url` **or** `safebind_cert_url`) can be sent on either request, but we strongly recommend including it on the ping — it's available at form fill time and lets us validate consent before you send PII.
 
 ### Lead Flow
 
@@ -379,54 +379,23 @@ Once accepted, transfer the consumer to the `transfer_phone` returned in the pin
 | `bid_expired` | Bid has expired (leads: 90s, calls: 60s) |
 | `duplicate_phone` | Phone number seen in last 30 days (leads) |
 | `duplicate_call` | Same phone had a billable call from your account in the last hour (calls) |
-| `missing_consent_proof` | `trusted_form_cert_url` is missing (leads only) |
+| `missing_consent_proof` | No proof of consent — neither `trusted_form_cert_url` nor `safebind_cert_url` (leads only) |
 | `failed_secondary_evaluation` | Lead data failed our evaluation (leads only) |
 
 ---
 
 ## Compliance Proof
 
-`trusted_form_cert_url` is required for all leads — it can be sent on either the **ping** or the **post** (not both needed). This is a [TrustedForm](https://activeprospect.com/trustedform/) certificate URL from ActiveProspect that proves the consumer consented on your form. Leads missing it on both requests are rejected with `"missing_consent_proof"`.
+**Proof of consent is required for all leads.** Send **one** of these — on either the **ping** or the **post** (not both requests needed):
 
-We strongly recommend sending `trusted_form_cert_url` (and all compliance fields) on the **ping**. The TrustedForm certificate is generated at form fill time, before you have PII — so it's available when you ping. Sending it early means your post only needs `bid_id`, PII, and driver identity.
+- `trusted_form_cert_url` — a [TrustedForm](https://activeprospect.com/trustedform/) certificate URL from ActiveProspect.
+- `safebind_cert_url` — a [SafeBind](https://safebind.ai) proof-of-consent URL, in the form `https://api.safebind.ai/c/<token>`.
 
----
+Either proves the consumer consented on your form. Leads carrying neither are rejected with `"missing_consent_proof"`.
 
-## Lead Origin
+**Send one, not both.** If you send both we verify the TrustedForm certificate and ignore the SafeBind URL — we don't pay two providers to answer the same question. Pick whichever you already capture.
 
-`source_type` tells us **who generated the lead**. It takes one of two values:
-
-| Value | Meaning | What else to send |
-|-------|---------|-------------------|
-| `"direct"` | You generated this lead yourself, on media you own and operate. | Nothing further — leave the affiliate fields out entirely. |
-| `"affiliate"` | Someone other than you generated it — an affiliate, sub-publisher, network, or another marketplace you sourced it from. | `affiliate_name` — the name of that business. `affiliate_id` is optional. |
-
-**If the lead is direct, you do not need to fill in `affiliate_id` or `affiliate_name`.** Send `source_type: "direct"` and stop there.
-
-`affiliate_name` is the business's actual name (legal or DBA). It is the field that matters: it lets us discuss specific sources with you and trace a consent complaint back to its origin, which an opaque identifier cannot.
-
-`affiliate_id` is **optional**. Send it if you already have an internal identifier for that business and it is **stable over time** — the same business getting the same ID on every ping lets us measure a source's performance across weeks even if its name is spelled inconsistently. If you don't have one, omit it; the name alone is enough.
-
-```jsonc
-// Direct — you generated the lead. No affiliate fields.
-{
-  "source_type": "direct",
-  "landing_page": "https://example.com/auto-quotes",
-  "traffic_channel": "sem"
-}
-
-// Affiliate — someone else generated it. Identify them.
-{
-  "source_type": "affiliate",
-  "affiliate_id": "PUB-4471",
-  "affiliate_name": "Example Quotes LLC",
-  "landing_page": "https://examplequotes.com/auto",
-  "traffic_channel": "sem",
-  "sub_id": "fb-retarget-03"
-}
-```
-
-> `source_type` is optional today and we do not reject pings that omit it. It is becoming a required field — populate it now so nothing changes for you later. If you send `source_type: "affiliate"` without `affiliate_name`, the lead is still accepted, but it counts as unattributed traffic.
+We strongly recommend sending your consent proof (and all compliance fields) on the **ping**. Both providers generate their certificate at form fill time, before you have PII — so it's available when you ping. Sending it early means your post only needs `bid_id`, PII, and driver identity.
 
 ---
 
@@ -459,7 +428,8 @@ All ping and post fields in one table. ✅ = required, ◐ = conditionally requi
 
 | Field | Type | Lead Ping | Lead Post | Call Ping | Call Post | Description |
 |-------|------|-----------|-----------|-----------|-----------|-------------|
-| `trusted_form_cert_url` | string (500) | ○ | ○ | ○ | ○ | **Required for leads** — send on ping or post (ping strongly recommended). TrustedForm cert URL proving consumer consent |
+| `trusted_form_cert_url` | string (500) | ○ | ○ | ○ | ○ | **Proof of consent — required for leads** (this *or* `safebind_cert_url`) — send on ping or post (ping strongly recommended). TrustedForm cert URL proving consumer consent |
+| `safebind_cert_url` | string (500) | ○ | ○ | ○ | ○ | **Alternative to `trusted_form_cert_url`** — SafeBind proof-of-consent URL (`https://api.safebind.ai/c/<token>`). Send one provider or the other; if both arrive we verify the TrustedForm cert and ignore this |
 | `tcpa_language` | string (2000) | ○ | ○ | ○ | ○ | TCPA consent text shown on the form. We encourage sending this on the ping |
 | `tcpa_json` | string (5000) | ○ | ○ | ○ | ○ | Structured TCPA consent data (includes consumer IP, timestamp). We encourage sending this on the ping |
 | `leadid_token` | string | ○ | ○ | ○ | ○ | Jornaya LeadiD token. We encourage sending this on the ping |
@@ -476,14 +446,14 @@ All ping and post fields in one table. ✅ = required, ◐ = conditionally requi
 
 | Field | Type | Lead Ping | Lead Post | Call Ping | Call Post | Description |
 |-------|------|-----------|-----------|-----------|-----------|-------------|
-| `source_type` | enum | ○ | — | ○ | — | `"direct"` = you generated this lead on media you own and operate. `"affiliate"` = a third party generated it (affiliate, sub-publisher, network, or another marketplace). See [Lead Origin](#lead-origin). Becoming required |
+| `source_type` | enum | ○ | — | ○ | — | `"direct"` = you generated this lead on media you own and operate. `"affiliate"` = a third party generated it (affiliate, sub-publisher, network, or another marketplace). |
 | `affiliate_name` | string (128) | ◐ | — | ◐ | — | **Required when `source_type` is `"affiliate"`; omit when `"direct"`.** The name of the business that generated the lead — legal or DBA, e.g. `"Example Quotes LLC"` |
 | `affiliate_id` | string (64) | ○ | — | ○ | — | Optional. Your internal identifier for that same business. Send it only if it is stable — the same business getting the same ID every time is what makes it useful |
-| `sub_id` | string (30) | ○ | — | ○ | — | **Deprecated** — use `affiliate_id` to identify a business. Still accepted, and still useful for its original purpose: an opaque path, creative, or placement token within one source. Alphanumeric, hyphens, underscores |
+| `sub_id` | string (30) | ○ | — | ○ | — | **Deprecated** (see changelog). An opaque path, creative, or placement token within one source. Alphanumeric, hyphens, underscores |
 | `campaign_name` | string (100) | ✅ | — | ○ | — |  |
-| `media_source` | string | ○ | — | ○ | — | The **platform** the media was bought on — not the channel type. Free text, so the long tail is covered: `"google"` `"bing"` `"facebook"` `"instagram"` `"tiktok"` `"youtube"` `"snapchat"` `"reddit"` `"pinterest"` `"taboola"` `"outbrain"` `"yahoo"`. **Lowercased on receipt**, so `"Google"` and `"google"` are one source rather than two rows in your reports. Send `traffic_channel` alongside it — `media_source: "google"` with `traffic_channel: "sem"` says something `media_source` alone can't |
-| `traffic_channel` | enum | ○ | — | ○ | — | `"sem"` paid search · `"organic_search"` unpaid search · `"display"` · `"native"` content-recommendation widgets (Taboola, Outbrain) · `"video"` YouTube, CTV, pre-roll · `"social"` · `"email"` · `"sms"` · `"contextual"` contextual-targeted media · `"other"` a channel you can identify that isn't listed here — use this rather than leaving the field empty.<br/>Google campaign types that span channels (Performance Max, Demand Gen) aren't channels: send the dominant channel, or `"other"` if genuinely mixed. Don't send `"affiliate"` here — that's an origin, see `source_type`.<br/>**Need a value that isn't listed?** Ask the Autobind team and we'll add it. Don't send your own — a value we don't recognize is dropped, and the lead reports as if you sent nothing.<br/>*Still accepted, mapped automatically:* `"cpc"` and `"search"` → `"sem"`, `"organic"` → `"organic_search"` |
-| `placement_type` | enum | ○ | — | ○ | — | `"thank_you_page"` `"leave_behind"` `"form_page"`.<br/>**Need a value that isn't listed?** Ask the Autobind team and we'll add it. Don't send your own — a value we don't recognize is dropped, and the lead reports as if you sent nothing. |
+| `media_source` | string | ○ | — | ○ | — | The **platform** the media was bought on — not the channel type. Free text, so the long tail is covered: `"google"` `"bing"` `"facebook"` `"instagram"` `"tiktok"` `"youtube"` `"snapchat"` `"reddit"` `"pinterest"` `"taboola"` `"outbrain"` `"yahoo"`. Send `traffic_channel` alongside it — `media_source: "google"` with `traffic_channel: "sem"` says something `media_source` alone can't |
+| `traffic_channel` | enum | ○ | — | ○ | — | `"sem"` paid search · `"organic_search"` unpaid search · `"display"` · `"native"` content-recommendation widgets (Taboola, Outbrain) · `"video"` YouTube, CTV, pre-roll · `"social"` · `"email"` · `"sms"` · `"contextual"` contextual-targeted media · `"other"` a channel you can identify that isn't listed here — use this rather than leaving the field empty.<br/><br/>**Need a value that isn't listed?** Ask the Autobind team and we'll add it.<br/>*Still accepted, mapped automatically:* `"cpc"` and `"search"` → `"sem"`, `"organic"` → `"organic_search"` |
+| `placement_type` | enum | ○ | — | ○ | — | `"thank_you_page"` `"leave_behind"` `"form_page"`.<br/>**Need a value that isn't listed?** Ask the Autobind team and we'll add it. |
 | `landing_page` | string (500) | ○ | — | ○ | — | URL consumer came from |
 | `search_keyword` | string | ○ | — | ○ | — |  |
 
@@ -814,7 +784,7 @@ Safe to retry (see Retry section).
 | Endpoint | Idempotent | Retry on |
 |----------|------------|----------|
 | `POST /leads/ping` | Yes (no side effects) | 429, 500, timeout |
-| `POST /leads/post` | Yes (same `bid_id` returns same result) | 500, timeout |
+| `POST /leads/post` | Yes (one request processes; a retry gets `202 processing` mid-flight, then the final result replays) | 500, timeout |
 | `GET /leads/status/:id` | Yes (read-only) | 429, 500, timeout |
 
 **Do NOT retry on:** 400 (fix your payload), 401 (fix your API key), 200 with `"rejected"` (the lead was evaluated and rejected — retrying won't change the result).
@@ -831,9 +801,19 @@ Give up.
 
 | Endpoint | Recommended timeout |
 |----------|-------------------|
-| Ping | 2 seconds |
-| Post | 15 seconds |
+| Ping | 3 seconds |
+| Post | 45 seconds |
 | Status | 5 seconds |
+
+> ⚠️ **Do not set the post timeout below 45 seconds.** The post verifies your consent proof with the provider you sent — a network call to ActiveProspect or SafeBind, which retries once on a transient failure. In the worst case that takes about 30 seconds. The previously documented 15 seconds was **shorter than the work the endpoint does**.
+>
+> **What a retry actually gets, precisely.** Exactly one request processes a `bid_id`. If you retry while the first request is still verifying, you get **HTTP 202** `{"status": "processing", "retry_after_seconds": 10}` — not a verdict, and never a contradictory one. Once that request finishes, the same `bid_id` replays its final `accepted`/`rejected` result to every later retry.
+>
+> A retry is therefore safe: it can never double-process your lead or return a verdict that later flips. But it cannot make the answer arrive faster, so the correct fix is the longer timeout, not more retries. Treat `processing` as "keep waiting", never as a rejection.
+>
+> **If `processing` persists.** It is bounded, not open-ended: should a request be interrupted before recording a verdict — an infrastructure fault on our side — the claim is released and your **next retry re-processes the lead normally**, at the latest about two minutes after the interrupted attempt began. So the escalation rule is simply: keep retrying on the given interval; if you are still seeing `processing` more than ~3 minutes after your first post, that is not normal — stop retrying and contact us with the `bid_id`.
+
+The **ping** moved from 2s to 3s for a smaller reason: when your ping carries a consent-proof URL we now check that the certificate exists before bidding, which is a free call to your provider capped at 1.5 seconds. If it can't answer in time we bid anyway — the check never costs you a bid — but the ping itself can take marginally longer than it used to.
 
 ---
 
@@ -870,7 +850,7 @@ If provided, exactly 17 characters.
 
 ### Critical rules
 - `drivers[0].relationship_to_policyholder` must be `"self"` on lead posts
-- `trusted_form_cert_url` (TrustedForm by ActiveProspect) is **required** — on the ping or the post (ping recommended)
+- Proof of consent is **required** — `trusted_form_cert_url` (TrustedForm by ActiveProspect) **or** `safebind_cert_url` (SafeBind), on the ping or the post (ping recommended)
 - Unknown fields are silently stripped and returned as `warnings` in the response (not rejected)
 
 ---
@@ -983,6 +963,7 @@ interface CallPingRequest {
   credit_status?: CreditStatus;
   residence_type?: ResidenceType;
   trusted_form_cert_url?: string;
+  safebind_cert_url?: string;
   tcpa_language?: string;
   tcpa_json?: string;
   leadid_token?: string;
@@ -1015,6 +996,7 @@ interface LeadPingRequest {
   residence_type?: ResidenceType;
   language?: Language;
   trusted_form_cert_url?: string;
+  safebind_cert_url?: string;
   tcpa_language?: string;
   tcpa_json?: string;
   leadid_token?: string;
@@ -1063,6 +1045,7 @@ interface CallPostRequest {
   dial_in_phone: string; // 10 digits
   language?: Language;
   trusted_form_cert_url?: string;
+  safebind_cert_url?: string;
   tcpa_language?: string;
   tcpa_json?: string;
   leadid_token?: string;
@@ -1094,7 +1077,8 @@ interface LeadPostDriver {
 interface LeadPostRequest {
   media_type: "lead";
   bid_id: string;
-  trusted_form_cert_url?: string; // Required for leads — send on ping or post (not both needed)
+  trusted_form_cert_url?: string; // Proof of consent — this OR safebind_cert_url, ping or post
+  safebind_cert_url?: string;     // SafeBind alternative: https://api.safebind.ai/c/<token>
   tcpa_language?: string;
   tcpa_json?: string;
   leadid_token?: string;
@@ -1194,6 +1178,10 @@ type CurrentCompany = "21stCentury" | "AAA" | "Allstate" | "AmFam" | "Amica" | "
 
 | Date | Change |
 |------|--------|
+| 2026-08-05 | **Post timeout raised to 45s; ping to 3s.** The post verifies consent proof with your provider and retries once, so the previous 15s was shorter than the work the endpoint does. A retry during verification returns `202 processing` — treat it as "keep waiting", never as a rejection |
+| 2026-08-05 | **Added `safebind_cert_url`** — [SafeBind](https://safebind.ai) proof of consent, accepted in place of `trusted_form_cert_url`. Send one or the other; if both arrive we verify the TrustedForm certificate. `missing_consent_proof` now fires only when neither is present |
+| 2026-08-04 | Added source attribution to lead pings: `source_type` (`"direct"` / `"affiliate"`), `affiliate_name`, `affiliate_id` |
+| 2026-08-04 | **`sub_id` deprecated** — use `affiliate_id` to identify a business. `sub_id` is still accepted and still works for its original purpose (an opaque path, creative, or placement token within one source), but it should no longer be used to identify who generated the lead |
 | 2026-04-07 | Added `lead_type` field (`"exclusive"` / `"shared"`) to lead pings — defaults to `"shared"` if omitted. Exclusive leads receive higher bids |
 | 2026-04-07 | Documented `current_policy_expires` date range: must be today or later, no more than 1 year in the future |
 | 2026-03-23 | Initial release |
