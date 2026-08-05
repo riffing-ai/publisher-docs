@@ -17,11 +17,11 @@
 
 # Autobind Lead & Call Acquisition API
 
-*Last updated: 2026-04-07*
+*Last updated: 2026-08-05.*
 
 ## Overview
 
-JSON API for submitting auto insurance leads and call transfers via ping-post. You ping with bid parameters (demographics, drivers, vehicles) to get a price, then post the consumer's PII if you accept our bid. Compliance proof (TrustedForm) can go on either request but we strongly recommend the ping.
+JSON API for submitting auto insurance leads and call transfers via ping-post. You ping with bid parameters (demographics, drivers, vehicles) to get a price, then post the consumer's PII if you accept our bid. Compliance proof (TrustedForm **or SafeBind**) can go on either request but we strongly recommend the ping.
 
 **Two media types:**
 - **`lead`** — Form-submitted consumer data. We buy the data.
@@ -399,44 +399,6 @@ We strongly recommend sending your consent proof (and all compliance fields) on 
 
 ---
 
-## Lead Origin
-
-`source_type` tells us **who generated the lead**. It takes one of two values:
-
-| Value | Meaning | What else to send |
-|-------|---------|-------------------|
-| `"direct"` | You generated this lead yourself, on media you own and operate. | Nothing further — leave the affiliate fields out entirely. |
-| `"affiliate"` | Someone other than you generated it — an affiliate, sub-publisher, network, or another marketplace you sourced it from. | `affiliate_name` — the name of that business. `affiliate_id` is optional. |
-
-**If the lead is direct, you do not need to fill in `affiliate_id` or `affiliate_name`.** Send `source_type: "direct"` and stop there.
-
-`affiliate_name` is the business's actual name (legal or DBA). It is the field that matters: it lets us discuss specific sources with you and trace a consent complaint back to its origin, which an opaque identifier cannot.
-
-`affiliate_id` is **optional**. Send it if you already have an internal identifier for that business and it is **stable over time** — the same business getting the same ID on every ping lets us measure a source's performance across weeks even if its name is spelled inconsistently. If you don't have one, omit it; the name alone is enough.
-
-```jsonc
-// Direct — you generated the lead. No affiliate fields.
-{
-  "source_type": "direct",
-  "landing_page": "https://example.com/auto-quotes",
-  "traffic_channel": "sem"
-}
-
-// Affiliate — someone else generated it. Identify them.
-{
-  "source_type": "affiliate",
-  "affiliate_id": "PUB-4471",
-  "affiliate_name": "Example Quotes LLC",
-  "landing_page": "https://examplequotes.com/auto",
-  "traffic_channel": "sem",
-  "sub_id": "fb-retarget-03"
-}
-```
-
-> `source_type` is optional today and we do not reject pings that omit it. It is becoming a required field — populate it now so nothing changes for you later. If you send `source_type: "affiliate"` without `affiliate_name`, the lead is still accepted, but it counts as unattributed traffic.
-
----
-
 ## Field Reference
 
 All ping and post fields in one table. ✅ = required, ◐ = conditionally required (the Description gives the condition), ○ = optional, — = not applicable.
@@ -484,13 +446,13 @@ All ping and post fields in one table. ✅ = required, ◐ = conditionally requi
 
 | Field | Type | Lead Ping | Lead Post | Call Ping | Call Post | Description |
 |-------|------|-----------|-----------|-----------|-----------|-------------|
-| `source_type` | enum | ○ | — | ○ | — | `"direct"` = you generated this lead on media you own and operate. `"affiliate"` = a third party generated it (affiliate, sub-publisher, network, or another marketplace). See [Lead Origin](#lead-origin). Becoming required |
+| `source_type` | enum | ○ | — | ○ | — | `"direct"` = you generated this lead on media you own and operate. `"affiliate"` = a third party generated it (affiliate, sub-publisher, network, or another marketplace). |
 | `affiliate_name` | string (128) | ◐ | — | ◐ | — | **Required when `source_type` is `"affiliate"`; omit when `"direct"`.** The name of the business that generated the lead — legal or DBA, e.g. `"Example Quotes LLC"` |
 | `affiliate_id` | string (64) | ○ | — | ○ | — | Optional. Your internal identifier for that same business. Send it only if it is stable — the same business getting the same ID every time is what makes it useful |
-| `sub_id` | string (30) | ○ | — | ○ | — | **Deprecated** — use `affiliate_id` to identify a business. Still accepted, and still useful for its original purpose: an opaque path, creative, or placement token within one source. Alphanumeric, hyphens, underscores |
+| `sub_id` | string (30) | ○ | — | ○ | — | **Deprecated** (see changelog). An opaque path, creative, or placement token within one source. Alphanumeric, hyphens, underscores |
 | `campaign_name` | string (100) | ✅ | — | ○ | — |  |
-| `media_source` | string | ○ | — | ○ | — | The **platform** the media was bought on — not the channel type. Free text, so the long tail is covered: `"google"` `"bing"` `"facebook"` `"instagram"` `"tiktok"` `"youtube"` `"snapchat"` `"reddit"` `"pinterest"` `"taboola"` `"outbrain"` `"yahoo"`. **Lowercased on receipt**, so `"Google"` and `"google"` are one source rather than two rows in your reports. Send `traffic_channel` alongside it — `media_source: "google"` with `traffic_channel: "sem"` says something `media_source` alone can't |
-| `traffic_channel` | enum | ○ | — | ○ | — | `"sem"` paid search · `"organic_search"` unpaid search · `"display"` · `"native"` content-recommendation widgets (Taboola, Outbrain) · `"video"` YouTube, CTV, pre-roll · `"social"` · `"email"` · `"sms"` · `"contextual"` contextual-targeted media · `"other"` a channel you can identify that isn't listed here — use this rather than leaving the field empty.<br/>Google campaign types that span channels (Performance Max, Demand Gen) aren't channels: send the dominant channel, or `"other"` if genuinely mixed. Don't send `"affiliate"` here — that's an origin, see `source_type`.<br/>**Need a value that isn't listed?** Ask the Autobind team and we'll add it. Don't send your own — a value we don't recognize is dropped, and the lead reports as if you sent nothing.<br/>*Still accepted, mapped automatically:* `"cpc"` and `"search"` → `"sem"`, `"organic"` → `"organic_search"` |
+| `media_source` | string | ○ | — | ○ | — | The **platform** the media was bought on — not the channel type. Free text, so the long tail is covered: `"google"` `"bing"` `"facebook"` `"instagram"` `"tiktok"` `"youtube"` `"snapchat"` `"reddit"` `"pinterest"` `"taboola"` `"outbrain"` `"yahoo"`. Send `traffic_channel` alongside it — `media_source: "google"` with `traffic_channel: "sem"` says something `media_source` alone can't |
+| `traffic_channel` | enum | ○ | — | ○ | — | `"sem"` paid search · `"organic_search"` unpaid search · `"display"` · `"native"` content-recommendation widgets (Taboola, Outbrain) · `"video"` YouTube, CTV, pre-roll · `"social"` · `"email"` · `"sms"` · `"contextual"` contextual-targeted media · `"other"` a channel you can identify that isn't listed here — use this rather than leaving the field empty.<br/><br/>**Need a value that isn't listed?** Ask the Autobind team and we'll add it. Don't send your own — a value we don't recognize is dropped, and the lead reports as if you sent nothing.<br/>*Still accepted, mapped automatically:* `"cpc"` and `"search"` → `"sem"`, `"organic"` → `"organic_search"` |
 | `placement_type` | enum | ○ | — | ○ | — | `"thank_you_page"` `"leave_behind"` `"form_page"`.<br/>**Need a value that isn't listed?** Ask the Autobind team and we'll add it. Don't send your own — a value we don't recognize is dropped, and the lead reports as if you sent nothing. |
 | `landing_page` | string (500) | ○ | — | ○ | — | URL consumer came from |
 | `search_keyword` | string | ○ | — | ○ | — |  |
@@ -1216,6 +1178,10 @@ type CurrentCompany = "21stCentury" | "AAA" | "Allstate" | "AmFam" | "Amica" | "
 
 | Date | Change |
 |------|--------|
+| 2026-08-05 | **Post timeout raised to 45s; ping to 3s.** The post verifies consent proof with your provider and retries once, so the previous 15s was shorter than the work the endpoint does. A retry during verification returns `202 processing` — treat it as "keep waiting", never as a rejection |
+| 2026-08-05 | **Added `safebind_cert_url`** — [SafeBind](https://safebind.ai) proof of consent, accepted in place of `trusted_form_cert_url`. Send one or the other; if both arrive we verify the TrustedForm certificate. `missing_consent_proof` now fires only when neither is present |
+| 2026-08-04 | Added source attribution to lead pings: `source_type` (`"direct"` / `"affiliate"`), `affiliate_name`, `affiliate_id` |
+| 2026-08-04 | **`sub_id` deprecated** — use `affiliate_id` to identify a business. `sub_id` is still accepted and still works for its original purpose (an opaque path, creative, or placement token within one source), but it should no longer be used to identify who generated the lead |
 | 2026-04-07 | Added `lead_type` field (`"exclusive"` / `"shared"`) to lead pings — defaults to `"shared"` if omitted. Exclusive leads receive higher bids |
 | 2026-04-07 | Documented `current_policy_expires` date range: must be today or later, no more than 1 year in the future |
 | 2026-03-23 | Initial release |
